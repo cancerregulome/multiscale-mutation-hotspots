@@ -82,6 +82,12 @@ DATABASES = {
         'NAME': 'django_mumuhotspots',
         'USER': 'django',
         'PASSWORD': 'password'
+    },
+    'data': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'data_mumuhotspots',
+        'USER': '',
+        'PASSWORD': ''
     }
 }
 
