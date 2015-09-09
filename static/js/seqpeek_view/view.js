@@ -203,6 +203,7 @@ function (
 
             _.each(this.data_bundle['tracks'], function (track) {
                 seqpeek_data.push({
+                    clusters: track['clusters'],
                     variants: track['mutations'],
                     tumor_type: track['label'],
                     row_id: track['render_info']['row_id'],
@@ -322,7 +323,17 @@ function (
 
                 seqpeek.addRegionScaleTrackToElement(region_track_g, { });
 
-                seqpeek.addProteinDomainTrackToElement(protein_domain_matches, region_track_g, { });
+                // TODO Move protein domain track below all mutation tracks
+                //seqpeek.addProteinDomainTrackToElement(protein_domain_matches, region_track_g, { });
+
+                // Use a protein domain track to render the clusters.
+                var clusters = track_obj['clusters'];
+                seqpeek.addProteinDomainTrackToElement(clusters, region_track_g, {
+                    color_scheme: {
+                        'cluster': 'lightgray'
+                    },
+                    source_key: 'type'
+                });
 
                 track_obj.region_track_svg = region_track_g;
             }, this);
