@@ -42,12 +42,12 @@ function (
 
         var AMINO_ACID_POSITION_FIELD_NAME = "amino_acid_position";
         var COORDINATE_FIELD_NAME = "amino_acid_position";
-        var TYPE_FIELD_NAME = "variant_classification";
+        var TYPE_FIELD_NAME = "mutation_type";
         var AMINO_ACID_MUTATION_FIELD_NAME = "amino_acid_mutation";
         var AMINO_ACID_WILDTYPE_FIELD_NAME = "amino_acid_wildtype";
         var DNA_CHANGE_FIELD_NAME = "dna_change";
 
-        var SAMPLE_ID_FIELD_NAME = "tumor_sample_barcode";
+        var SAMPLE_ID_FIELD_NAME = "patient_barcode";
 
         var DNA_CHANGE_KEY_FN = function(data_point) {
             var id = data_point[DNA_CHANGE_FIELD_NAME];
@@ -174,7 +174,6 @@ function (
             this.sample_track_type_user_setting = this.sample_track_type;
 
             this.sample_highlight_mode = SAMPLE_HIGHLIGHT_MODES.ALL;
-            this.current_view_mode = DISPLAY_MODES.PROTEIN;
             this.current_interaction_mode = INTERACTION_MODES.ZOOM;
 
             this.selected_group_by = this.__get_current_group_by("Mutation Type");
