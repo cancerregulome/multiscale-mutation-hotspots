@@ -124,13 +124,29 @@ def get_maf_data(gene, tumor_type_list):
     else:
         return get_maf_data_remote(gene, tumor_type_list)
 
+def process_cluster_data_for_tumor(all_clusters, tumor_type):
+    clusters = filter(lambda c: c['cancer'] == tumor_type, all_clusters)
+    result = []
+    for index, cluster in enumerate(clusters):
+        item = {
+            'name': 'TestCluster',
+            'type': 'cluster',
+            'id': 'cluster_' + str(index),
+            'locations': [{
+                'start': cluster['start'],
+                'end': cluster['end']
+            }]
+        }
+        result.append(item)
+    return result
 
-def build_track_data(tumor_type_list, all_tumor_mutations):
+def build_track_data(tumor_type_list, all_tumor_mutations, all_clusters):
     tracks = []
     for tumor_type in tumor_type_list:
         tracks.append({
             TUMOR_TYPE_FIELD: tumor_type,
-            'mutations': filter(lambda m: m['tumor_type'] == tumor_type, all_tumor_mutations)
+            'mutations': filter(lambda m: m['tumor_type'] == tumor_type, all_tumor_mutations),
+            'clusters': process_cluster_data_for_tumor(all_clusters, tumor_type)
         })
 
     return tracks
@@ -153,8 +169,9 @@ def get_genes_tumors_lists_debug():
     }
 
 def get_cluster_data(tumor_type_array, gene):
-    data = get_cluster_data_remote(tumor_type_array, gene)
-    logging.debug("CLUSTERS: " + repr(data))
+    clusters = get_cluster_data_remote(tumor_type_array, gene)
+    logging.debug("CLUSTERS: " + repr(clusters))
+    return clusters
 
 def sanitize_gene_input(param_string):
     return ALPHA_FINDER.sub('', param_string)
@@ -191,7 +208,7 @@ def seqpeek(request):
     maf_data = get_maf_data(gene, parsed_tumor_list)
     uniprot_id = find_uniprot_id(maf_data)
     protein_data = get_protein_domains(uniprot_id)
-    track_data = build_track_data(parsed_tumor_list, maf_data)
+    track_data = build_track_data(parsed_tumor_list, maf_data, cluster_data)
 
     plot_data = {
         'gene_label': gene,
