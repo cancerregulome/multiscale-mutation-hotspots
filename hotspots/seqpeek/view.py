@@ -8,6 +8,8 @@ from mock_data import EGFR_GBM_LGG as FAKE_PLOT_DATA
 from maf_api_mock_data import EGFR_BLCA_BRCA as FAKE_MAF_DATA
 from django.conf import settings
 
+from hotspots.seqpeek.cluster_data import get_cluster_data as get_cluster_data_remote
+
 SEQPEEK_VIEW_DEBUG_MODE = True
 
 SAMPLE_ID_FIELD_NAME = 'tumor_sample_barcode'
@@ -15,11 +17,6 @@ TUMOR_TYPE_FIELD = "tumor"
 COORDINATE_FIELD_NAME = 'amino_acid_position'
 
 PROTEIN_DOMAIN_DB = 'PFAM'
-
-#MAF_ENDPOINT_URI_TEMPLATE = settings.BASE_API_URL + '/_ah/api/maf_api/v1/maf_search?gene={gene}&{tumor_parameters}'
-#BQ_ENDPOINT_URL = settings.BASE_API_URL + '/_ah/api/bq_api/v1'
-
-#INTERPRO_BQ_ENDPOINT_URI_TEMPLATE = settings.BASE_API_URL + '/_ah/api/bq_api/v1/bq_interpro?uniprot_id={uniprot_id}'
 
 ALPHA_FINDER = re.compile('[\W_]+', re.UNICODE)
 
@@ -155,36 +152,9 @@ def get_genes_tumors_lists_debug():
         'disease_codes': ['ACC', 'BRCA', 'GBM']
     }
 
-
-def get_genes_tumors_lists_remote():
-    uri = BQ_ENDPOINT_URL + '/bq_maf_genes'
-    api_response = urlfetch.fetch(uri, deadline=60)
-    symbol_list = json.loads(api_response.content, object_hook=_decode_dict)
-
-    list = []
-    for item in symbol_list['items']:
-        list.append(str(item['hugo_symbol']))
-    context = {
-        'symbol_list': list
-    }
-
-    # uri = settings.BASE_API_URL + '/_ah/api/fm_api/v1/fmdomains'
-    uri = settings.BASE_API_URL + '/_ah/api/meta_api/v1/metadata_domains'
-    api_response = urlfetch.fetch(uri, deadline=60)
-    disease_codes = json.loads(api_response.content, object_hook=_decode_dict)
-    disease_codes = disease_codes['Disease_Code']
-
-    context['disease_codes'] = disease_codes
-
-    return context
-
-
-def get_genes_tumors_lists():
-    if SEQPEEK_VIEW_DEBUG_MODE:
-        return get_genes_tumors_lists_debug()
-    else:
-        return get_genes_tumors_lists_remote()
-
+def get_cluster_data(tumor_type_array, gene):
+    data = get_cluster_data_remote(tumor_type_array, gene)
+    logging.debug("CLUSTERS: " + repr(data))
 
 def sanitize_gene_input(param_string):
     return ALPHA_FINDER.sub('', param_string)
@@ -202,7 +172,7 @@ def sanitize_normalize_tumor_type(tumor_type_list):
 
 
 def seqpeek(request):
-    context = get_genes_tumors_lists()
+    context = {}
 
     if (('tumor_type' not in request.GET) or (request.GET['tumor_type'] == '')) or \
             (('gene' not in request.GET) or (request.GET['gene'] == '')):
@@ -215,6 +185,8 @@ def seqpeek(request):
 
     if len(parsed_tumor_list) == 0:
         return render(request, TEMPLATE_NAME, context)
+
+    cluster_data = get_cluster_data(parsed_tumor_list, gene)
 
     maf_data = get_maf_data(gene, parsed_tumor_list)
     uniprot_id = find_uniprot_id(maf_data)
