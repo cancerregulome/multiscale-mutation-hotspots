@@ -6,13 +6,14 @@ from google.appengine.api import urlfetch
 from django.shortcuts import render
 from mock_data import EGFR_GBM_LGG as FAKE_PLOT_DATA
 from maf_api_mock_data import EGFR_BLCA_BRCA as FAKE_MAF_DATA
-from django.conf import settings
 
 from hotspots.seqpeek.cluster_data import get_cluster_data as get_cluster_data_remote
+from hotspots.seqpeek.mutation_data import get_mutation_data as get_mutation_data_remote
 
 SEQPEEK_VIEW_DEBUG_MODE = True
+SEQPEEK_VIEW_MUTATION_DEBUG = False
 
-SAMPLE_ID_FIELD_NAME = 'tumor_sample_barcode'
+SAMPLE_ID_FIELD_NAME = 'patient_barcode'
 TUMOR_TYPE_FIELD = "tumor"
 COORDINATE_FIELD_NAME = 'amino_acid_position'
 
@@ -112,24 +113,24 @@ def get_maf_data_debug(gene, tumor_type_list):
 
 
 def get_maf_data_remote(gene, tumor_type_list):
-    endpoint_uri = build_endpoint_uri(gene, tumor_type_list)
-    api_response = urlfetch.fetch(endpoint_uri, deadline=60)
-    data_json = json.loads(api_response.content)
-    return data_json['items']
+    if SEQPEEK_VIEW_MUTATION_DEBUG:
+        return get_maf_data_debug(gene, tumor_type_list)
+    else:
+        return get_mutation_data_remote(tumor_type_list, gene)
 
 
-def get_maf_data(gene, tumor_type_list):
-    if SEQPEEK_VIEW_DEBUG_MODE:
+def get_mutation_data(gene, tumor_type_list):
+    if SEQPEEK_VIEW_MUTATION_DEBUG:
         return deepcopy(FAKE_MAF_DATA['items'])
     else:
-        return get_maf_data_remote(gene, tumor_type_list)
+        return get_mutation_data_remote(tumor_type_list, gene)
 
 def process_cluster_data_for_tumor(all_clusters, tumor_type):
-    clusters = filter(lambda c: c['cancer'] == tumor_type, all_clusters)
+    clusters = filter(lambda c: c['tumor_type'] == tumor_type, all_clusters)
     result = []
     for index, cluster in enumerate(clusters):
         item = {
-            'name': 'TestCluster',
+            'name': '',
             'type': 'cluster',
             'id': 'cluster_' + str(index),
             'locations': [{
@@ -151,7 +152,6 @@ def build_track_data(tumor_type_list, all_tumor_mutations, all_clusters):
 
     return tracks
 
-
 def find_uniprot_id(mutations):
     uniprot_id = None
     for m in mutations:
@@ -161,13 +161,6 @@ def find_uniprot_id(mutations):
 
     return uniprot_id
 
-
-def get_genes_tumors_lists_debug():
-    return {
-        'symbol_list': ['EGFR', 'TP53', 'PTEN'],
-        'disease_codes': ['ACC', 'BRCA', 'GBM']
-    }
-
 def get_cluster_data(tumor_type_array, gene):
     clusters = get_cluster_data_remote(tumor_type_array, gene)
     logging.debug("CLUSTERS: " + repr(clusters))
@@ -175,7 +168,6 @@ def get_cluster_data(tumor_type_array, gene):
 
 def sanitize_gene_input(param_string):
     return ALPHA_FINDER.sub('', param_string)
-
 
 def sanitize_normalize_tumor_type(tumor_type_list):
     sanitized = []
@@ -186,7 +178,6 @@ def sanitize_normalize_tumor_type(tumor_type_list):
             sanitized.append(tumor_label)
 
     return sanitized
-
 
 def seqpeek(request):
     context = {}
@@ -205,7 +196,7 @@ def seqpeek(request):
 
     cluster_data = get_cluster_data(parsed_tumor_list, gene)
 
-    maf_data = get_maf_data(gene, parsed_tumor_list)
+    maf_data = get_mutation_data(gene, parsed_tumor_list)
     uniprot_id = find_uniprot_id(maf_data)
     protein_data = get_protein_domains(uniprot_id)
     track_data = build_track_data(parsed_tumor_list, maf_data, cluster_data)
