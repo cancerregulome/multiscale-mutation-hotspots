@@ -82,7 +82,7 @@ function(
         },
 
         _buildHovercardHandler: function() {
-            var handler_params = _.extend(this.config.hovercard.config, {
+            var handler_params = _.extend(this.config.hovercard, {
                 canvas_id: this.config.guid,
                 data_config: this.config.hovercard.content
             });
