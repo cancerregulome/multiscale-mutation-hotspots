@@ -136,7 +136,8 @@ def process_cluster_data_for_tumor(all_clusters, tumor_type):
             'locations': [{
                 'start': cluster['start'],
                 'end': cluster['end']
-            }]
+            }],
+            'mutation_stats': cluster['mutation_stats']
         }
         result.append(item)
     return result

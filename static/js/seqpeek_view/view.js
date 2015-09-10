@@ -334,6 +334,25 @@ function (
                         source_key: 'type',
                         guid: track_guid,
                         hovercard_content: {
+                            "Location": function (d) {
+                                return d.start + '-' + d.end;
+                            },
+                            "Missense": function (d) {
+                                return d.mutation_stats.missense_mutations;
+                            },
+                            "Nonsense": function (d) {
+                                return d.mutation_stats.nonsense_mutations;
+                            },
+                            "Synonymous": function (d) {
+                                return d.mutation_stats.silent_mutations;
+                            }
+                        }
+                    });
+                }
+                else {
+                    seqpeek.addProteinDomainTrackToElement(protein_domain_matches, region_track_g, {
+                        guid: track_guid,
+                        hovercard_content: {
                             "DB": function (d) {
                                 return d.dbname;
                             },
@@ -354,9 +373,6 @@ function (
                             }
                         }
                     });
-                }
-                else {
-                    seqpeek.addProteinDomainTrackToElement(protein_domain_matches, region_track_g, { });
                 }
 
                 track_obj.region_track_svg = region_track_g;
