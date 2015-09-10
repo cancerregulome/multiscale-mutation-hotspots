@@ -2,7 +2,11 @@ require.config({
     baseUrl: '/static/js/seqpeek_view',
 
     paths: {
-        domReady: 'vendor/domReady'
+        d3: 'vendor/d3.min',
+        domReady: 'vendor/domReady',
+        jquery: 'vendor/jquery-1.11.1.min',
+        underscore: 'vendor/underscore',
+        vq: 'vendor/vq.min'
     },
 
     shim: { }
@@ -11,11 +15,13 @@ require.config({
 
 require([
     'domReady',
-    './view'
+    './view',
+    'vq'
 
 ], function(
     domReady,
-    SeqPeekViewFactory
+    SeqPeekViewFactory,
+    vq
 ) {
     domReady(function() {
         if (typeof __data_bundle == "undefined" || __data_bundle === "undefined") {

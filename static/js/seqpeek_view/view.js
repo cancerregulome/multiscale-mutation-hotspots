@@ -298,10 +298,12 @@ function (
             var seqpeek = SeqPeekBuilder.create(seqpeek_config);
 
             _.each(tracks, function(track_obj) {
+                var track_guid = "C" + vq.utils.VisUtils.guid();
                 var track_elements_svg = d3.select(track_obj.target_element)
                     .append("svg")
                     .attr("width", TRACK_SVG_WIDTH)
                     .attr("height", VARIANT_TRACK_MAX_HEIGHT + PROTEIN_DOMAIN_HEIGHT)
+                    .attr("id", track_guid)
                     .style("pointer-events", "none");
 
                 var sample_plot_track_g = track_elements_svg
@@ -329,7 +331,28 @@ function (
                         color_scheme: {
                             'cluster': 'lightgray'
                         },
-                        source_key: 'type'
+                        source_key: 'type',
+                        guid: track_guid,
+                        hovercard_content: {
+                            "DB": function (d) {
+                                return d.dbname;
+                            },
+                            "EVD": function (d) {
+                                return d.evd;
+                            },
+                            "ID": function (d) {
+                                return d.id;
+                            },
+                            "Name": function (d) {
+                                return d.name;
+                            },
+                            "Status": function (d) {
+                                return d.status;
+                            },
+                            "LOC": function (d) {
+                                return d.start + " - " + d.end;
+                            }
+                        }
                     });
                 }
                 else {
