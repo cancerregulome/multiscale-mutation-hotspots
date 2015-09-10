@@ -322,17 +322,19 @@ function (
 
                 seqpeek.addRegionScaleTrackToElement(region_track_g, { });
 
-                // TODO Move protein domain track below all mutation tracks
-                //seqpeek.addProteinDomainTrackToElement(protein_domain_matches, region_track_g, { });
-
                 // Use a protein domain track to render the clusters.
-                var clusters = track_obj['clusters'];
-                seqpeek.addProteinDomainTrackToElement(clusters, region_track_g, {
-                    color_scheme: {
-                        'cluster': 'lightgray'
-                    },
-                    source_key: 'type'
-                });
+                if (track_obj.is_summary_track == false) {
+                    var clusters = track_obj['clusters'];
+                    seqpeek.addProteinDomainTrackToElement(clusters, region_track_g, {
+                        color_scheme: {
+                            'cluster': 'lightgray'
+                        },
+                        source_key: 'type'
+                    });
+                }
+                else {
+                    seqpeek.addProteinDomainTrackToElement(protein_domain_matches, region_track_g, { });
+                }
 
                 track_obj.region_track_svg = region_track_g;
             }, this);
