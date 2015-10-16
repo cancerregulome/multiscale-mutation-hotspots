@@ -11,16 +11,48 @@ CRLF      = '\n'
 entry     = 'ID' ws <(letterOrDigit|'_')+>:code -> code
 ID        = entry:e ws ('Reviewed'|'Unreviewed') ';' ws <digit+>:length ws 'AA.' CRLF -> (e, int(length))
 accession = <letterOrDigit+>:code ';' -> code
-AC        = 'AC' ws accession:code -> code
+AC        = 'AC' ws accession:primary (ws accession)*:secondary CRLF -> (primary, secondary)
+ACrest    = 'AC' (ws accession)+:secondary CRLF -> secondary
 DT        = 'DT' (~CRLF anything)* CRLF
-DE        = 'DE' ws 'RecName:' ws 'Full=' <(letterOrDigit|' ')+>:name ';' CRLF -> name
+DE        = 'DE' ws 'RecName:' ws 'Full=' <(~(';'|CRLF) anything)+>:name ';' CRLF -> name
 REST      = anything*
-record    = CRLF* ID:id AC:ac DT* DE:name REST -> {'accession': ac, 'entry_name': id[0], 'length': id[1], 'protein_name': name}
+record    = CRLF* ID:id AC:ac1 ACrest*:acr DT* DE:name REST -> {'ac_p': ac1[0], 'ac_r1': ac1[1], 'ac_r2': acr, 'entry_name': id[0], 'length': id[1], 'protein_name': name}
 """, {})
 
 UNIPROT_RECORD_TERMINATOR = re_compile('^//')
-FIELDNAMES = ['accession', 'entry_name', 'length', 'protein_name']
+FIELDNAMES = ['primary_accession', 'entry_name', 'length', 'protein_name']
 PRINT_LIMIT = 10000
+
+
+class UniProtRecord(object):
+    def __init__(self, ac_prim, ac_sec_arr, entry_name, length, protein_name):
+        self.primary_accession = ac_prim
+        self.secondary_accessions = ac_sec_arr
+        self.entry_name = entry_name
+        self.length = length
+        self.protein_name = protein_name
+
+    def as_dict(self):
+        return {
+            'primary_accession': self.primary_accession,
+            'entry_name': self.entry_name,
+            'length': self.length,
+            'protein_name': self.protein_name
+        }
+
+
+def parse_chunk(chunk):
+    """
+    :param chunk: StringIO containing one UniProt record, up to the record separator line ('//')
+    """
+    record = UNIPROT_GRAMMAR(chunk.getvalue()).record()
+    return UniProtRecord(
+        record['ac_p'],
+        record['ac_r1'] + record['ac_r2'],
+        record['entry_name'],
+        record['length'],
+        record['protein_name']
+    )
 
 # Generator
 def read_file(input_file_path):
@@ -34,6 +66,7 @@ def read_file(input_file_path):
     total_records = 0
     chunk = StringIO()
     for line in infile:
+        parsed = None
         if len(UNIPROT_RECORD_TERMINATOR.findall(line)) == 0:
             chunk.write(line)
         else:
@@ -43,11 +76,10 @@ def read_file(input_file_path):
                 count = 0
                 print("Processed " + str(total_records))
 
-            uniprot_record = chunk.getvalue()
-            parsed = None
             try:
-                parsed = UNIPROT_GRAMMAR(uniprot_record).record()
+                parsed = parse_chunk(chunk)
             except Exception as e:
+                e.message
                 pass
 
             chunk = StringIO()
@@ -77,16 +109,16 @@ def main():
     outfile_path = sys_argv[3]
 
     writer = DictWriter(open(outfile_path, 'w'), fieldnames=FIELDNAMES)
+    writer.writeheader()
 
     whitelist = build_uniprot_id_whitelist_from_tsv(whitelist_tsv_path)
     print("Whitelist size: " + str(len(whitelist)))
 
     for item in read_file(uniprot_sprot_dat_path):
-        if item['accession'] not in whitelist:
+        if item.primary_accession not in whitelist:
             continue
-        writer.writerow(item)
 
-    writer.close()
+        writer.writerow(item.as_dict())
 
 if __name__ == '__main__':
     main()
