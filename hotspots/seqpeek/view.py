@@ -7,15 +7,18 @@ from django.shortcuts import render
 from mock_data import EGFR_GBM_LGG as FAKE_PLOT_DATA
 from maf_api_mock_data import EGFR_BLCA_BRCA as FAKE_MAF_DATA
 
+from hotspots.seqpeek.uniprot_data import get_uniprot_data
 from hotspots.seqpeek.cluster_data import get_cluster_data as get_cluster_data_remote
 from hotspots.seqpeek.mutation_data import get_mutation_data as get_mutation_data_remote
 
-SEQPEEK_VIEW_DEBUG_MODE = True
+SEQPEEK_VIEW_DEBUG_MODE = False
 SEQPEEK_VIEW_MUTATION_DEBUG = False
 
 SAMPLE_ID_FIELD_NAME = 'patient_barcode'
 TUMOR_TYPE_FIELD = "tumor"
 COORDINATE_FIELD_NAME = 'amino_acid_position'
+
+MUTATION_DATA_PROTEIN_FIELD = 'uniprot_id'
 
 PROTEIN_DOMAIN_DB = 'PFAM'
 
@@ -94,11 +97,12 @@ def get_protein_domains_local_debug(uniprot_id):
 
 
 def get_protein_domains_remote(uniprot_id):
-    endpoint_uri = build_interpro_endpoint_uri(uniprot_id)
-    api_response = urlfetch.fetch(endpoint_uri, deadline=60)
-    data_json = json.loads(api_response.content)
-    protein = data_json['items'][0]['interpro_json']
-    return protein
+    uniprot_data = get_uniprot_data(uniprot_id)
+    logging.debug("UniProt entry: " + str(uniprot_data))
+
+    # Add protein domain data to the UniProt entry
+    uniprot_data['matches'] = []
+    return uniprot_data
 
 
 def get_protein_domains(uniprot_id):
@@ -156,8 +160,9 @@ def build_track_data(tumor_type_list, all_tumor_mutations, all_clusters):
 def find_uniprot_id(mutations):
     uniprot_id = None
     for m in mutations:
-        if 'uniprot_id' in m:
-            uniprot_id = m['uniprot_id']
+        logging.debug(str(m))
+        if MUTATION_DATA_PROTEIN_FIELD in m:
+            uniprot_id = m[MUTATION_DATA_PROTEIN_FIELD]
             break
 
     return uniprot_id
@@ -199,6 +204,8 @@ def seqpeek(request):
 
     maf_data = get_mutation_data(gene, parsed_tumor_list)
     uniprot_id = find_uniprot_id(maf_data)
+    logging.debug("Found UniProt ID: " + repr(uniprot_id))
+
     protein_data = get_protein_domains(uniprot_id)
     track_data = build_track_data(parsed_tumor_list, maf_data, cluster_data)
 

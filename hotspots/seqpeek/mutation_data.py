@@ -9,6 +9,7 @@ def parse_cluster(row):
     return {
         'tumor_type': row['tumor_type'],
         'gene': row['gene'],
+        'uniprot_id': row['protein_ID'],
         'patient_barcode': row['patient_id'],
         'mutation_type': row['mutation_type'],
         'amino_acid_position': row['aa_location'],
@@ -21,7 +22,7 @@ def get_mutation_data(tumor_type_array, gene):
     # Generate the 'IN' statement string: (%s, %s, ..., %s)
     tumor_stmt = ', '.join(['%s' for tumor in tumor_type_array])
 
-    query_tpl = 'SELECT Cancer AS tumor_type, gene, tumor_sample AS patient_id, mutation_type, aa_change, aa_location, aa1, aa2 ' \
+    query_tpl = 'SELECT Cancer AS tumor_type, gene, protein_ID, tumor_sample AS patient_id, mutation_type, aa_change, aa_location, aa1, aa2 ' \
                 'FROM {mutation_table} ' \
                 'WHERE gene=%s AND Cancer IN ({tumor_stmt})'
     query = query_tpl.format(mutation_table=MUTATION_TABLE, tumor_stmt=tumor_stmt)
