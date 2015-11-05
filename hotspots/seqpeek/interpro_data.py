@@ -10,7 +10,7 @@ class InterProEntryNotFound(Exception):
         self.message = uniprot_id
 
 def get_protein_domain_data(uniprot_id):
-    query_tpl = 'SELECT interpro_id, \'name\', \'database\', start, end ' \
+    query_tpl = 'SELECT interpro_id, `name`, `database`, start, end ' \
                 'FROM {interpro_table} ' \
                 'WHERE uniprot_accession=%s'
     query = query_tpl.format(interpro_table=INTERPRO_TABLE)
