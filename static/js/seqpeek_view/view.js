@@ -329,7 +329,7 @@ function (
                     var clusters = track_obj['clusters'];
                     seqpeek.addProteinDomainTrackToElement(clusters, region_track_g, {
                         color_scheme: {
-                            'cluster': 'lightgray'
+                            'cluster': '#FD8F42'
                         },
                         source_key: 'type',
                         guid: track_guid,
@@ -352,6 +352,10 @@ function (
                 else {
                     seqpeek.addProteinDomainTrackToElement(protein_domain_matches, region_track_g, {
                         guid: track_guid,
+                        color_scheme: {
+                            'PFAM': '#84ACBA'
+                        },
+                        source_key: 'dbname',
                         hovercard_content: {
                             "DB": function (d) {
                                 return d.dbname;
