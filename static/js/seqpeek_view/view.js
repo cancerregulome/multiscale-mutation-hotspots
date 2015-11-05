@@ -36,7 +36,7 @@ function (
         var TICK_TRACK_HEIGHT = 25;
         var REGION_TRACK_HEIGHT = 5;
         var PROTEIN_DOMAIN_HEIGHT = 20;
-        var VIEWPORT_WIDTH = 1500;
+        var VIEWPORT_WIDTH = 1024;
         var SAMPLE_PLOT_TRACK_STEM_HEIGHT = 30;
         var TRACK_SVG_WIDTH = VIEWPORT_WIDTH + Y_AXIS_SCALE_WIDTH;
 
