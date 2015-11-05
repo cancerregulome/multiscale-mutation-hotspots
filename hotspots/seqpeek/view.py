@@ -6,8 +6,10 @@ from google.appengine.api import urlfetch
 from django.shortcuts import render
 from mock_data import EGFR_GBM_LGG as FAKE_PLOT_DATA
 from maf_api_mock_data import EGFR_BLCA_BRCA as FAKE_MAF_DATA
+from hotspots.seqpeek.tumor_types import tumor_types as all_tumor_types
 
 from hotspots.seqpeek.uniprot_data import get_uniprot_data
+from hotspots.seqpeek.interpro_data import get_protein_domain_data
 from hotspots.seqpeek.cluster_data import get_cluster_data as get_cluster_data_remote
 from hotspots.seqpeek.mutation_data import get_mutation_data as get_mutation_data_remote
 
@@ -96,12 +98,43 @@ def get_protein_domains_local_debug(uniprot_id):
     return deepcopy(FAKE_PLOT_DATA['protein'])
 
 
+def process_raw_domain_data(data):
+    result = []
+    for item in data:
+        database = item['database']
+
+        # Filter for PFAM
+        if not database.startswith('PF'):
+            continue
+
+        domain = {
+            'name': item['name'],
+            'locations': [{
+                'start': item['start'],
+                'end': item['end']
+            }],
+            'dbname': 'PFAM',
+            'ipr': {
+                'type': 'Domain',
+                'id': item['interpro_id'],
+                'name': item['name']
+            },
+            'id': database
+        }
+
+        result.append(domain)
+
+    logging.debug("Found {total} domains, filtered down to {num}".format(total=len(data), num=len(result)))
+    return result
+
 def get_protein_domains_remote(uniprot_id):
     uniprot_data = get_uniprot_data(uniprot_id)
     logging.debug("UniProt entry: " + str(uniprot_data))
 
     # Add protein domain data to the UniProt entry
-    uniprot_data['matches'] = []
+    raw_domain_data = get_protein_domain_data(uniprot_id)
+    domains = process_raw_domain_data(raw_domain_data)
+    uniprot_data['matches'] = domains
     return uniprot_data
 
 
@@ -249,7 +282,8 @@ def seqpeek(request):
         'plot_data': plot_data,
         'data_bundle': json.dumps(plot_data),
         'gene': gene,
-        'tumor_list': tumor_list
+        'tumor_list': tumor_list,
+        'all_tumor_types': all_tumor_types
     })
 
     return render(request, TEMPLATE_NAME, context)
