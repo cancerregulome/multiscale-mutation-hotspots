@@ -55,4 +55,9 @@
             __data_bundle = {{ data_bundle|safe }};
         </script>
     {% endif %}
+    <form action="/seqpeek">
+    {% for tumor_type in all_tumor_types %}
+        <input type="checkbox">{{ tumor_type }}</input><br/>
+    {% endfor %}
+    </form>
 </body>
