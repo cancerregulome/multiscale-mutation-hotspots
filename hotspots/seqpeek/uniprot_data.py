@@ -1,4 +1,3 @@
-from MySQLdb.cursors import DictCursor
 import logging
 
 from hotspots.database_util import sql_connection
@@ -12,7 +11,7 @@ class UniProtEntryNotFound(Exception):
 def get_uniprot_data(uniprot_id):
     query_tpl = 'SELECT primary_accession, entry_name, length, protein_name ' \
                 'FROM {uniprot_table} ' \
-                'WHERE primary_accession=%s'
+                'WHERE primary_accession=?'
     query = query_tpl.format(uniprot_table=UNIPROT_TABLE)
 
     logging.debug("UNIPROT SQL: " + query)
@@ -20,12 +19,13 @@ def get_uniprot_data(uniprot_id):
     values = [uniprot_id]
 
     db = sql_connection()
-    cursor = db.cursor(DictCursor)
+    cursor = db.cursor()
     cursor.execute(query, tuple(values))
 
     items = []
     for row in cursor.fetchall():
-        items.append(row)
+        res = {k: row[k] for k in row.keys()}
+        items.append(res)
 
     cursor.close()
     db.close()

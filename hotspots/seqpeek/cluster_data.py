@@ -1,10 +1,10 @@
-from MySQLdb.cursors import DictCursor
+#from MySQLdb.cursors import DictCursor
 import logging
 import re
 
 from hotspots.database_util import sql_connection
 
-CLUSTER_TABLE = 'clusters'
+CLUSTER_TABLE = 'clusters_tumor'
 CLUSTER_MUTATION_FIELDS = ['missense_mutations', 'nonsense_mutations', 'silent_mutations']
 # Breaks down the cluster string from the database:
 # "100-200" -> ('100', '200')
@@ -24,11 +24,11 @@ def parse_cluster(row):
 
 def get_cluster_data(tumor_type_array, gene):
     # Generate the 'IN' statement string: (%s, %s, ..., %s)
-    tumor_stmt = ', '.join(['%s' for tumor in tumor_type_array])
+    tumor_stmt = ', '.join(['?' for tumor in tumor_type_array])
 
     query_tpl = 'SELECT cancer as tumor_type, gene, cluster, missense_mutations, nonsense_mutations, silent_mutations '\
                 'FROM {cluster_table} '\
-                'WHERE gene=%s AND cancer IN ({tumor_stmt})'
+                'WHERE gene=? AND cancer IN ({tumor_stmt})'
     query = query_tpl.format(cluster_table=CLUSTER_TABLE, tumor_stmt=tumor_stmt)
 
     logging.debug("CLUSTER SQL: " + query)
@@ -37,7 +37,8 @@ def get_cluster_data(tumor_type_array, gene):
     values.extend(tumor_type_array)
 
     db = sql_connection()
-    cursor = db.cursor(DictCursor)
+    #cursor = db.cursor(DictCursor)
+    cursor = db.cursor()
     cursor.execute(query, tuple(values))
 
     items = []

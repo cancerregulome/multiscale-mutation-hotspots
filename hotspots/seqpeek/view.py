@@ -2,7 +2,6 @@ from copy import deepcopy
 import json
 import logging
 import re
-from google.appengine.api import urlfetch
 from django.shortcuts import render
 from mock_data import EGFR_GBM_LGG as FAKE_PLOT_DATA
 from maf_api_mock_data import EGFR_BLCA_BRCA as FAKE_MAF_DATA
@@ -193,7 +192,6 @@ def build_track_data(tumor_type_list, all_tumor_mutations, all_clusters):
 def find_uniprot_id(mutations):
     uniprot_id = None
     for m in mutations:
-        logging.debug(str(m))
         if MUTATION_DATA_PROTEIN_FIELD in m:
             uniprot_id = m[MUTATION_DATA_PROTEIN_FIELD]
             break
@@ -202,7 +200,6 @@ def find_uniprot_id(mutations):
 
 def get_cluster_data(tumor_type_array, gene):
     clusters = get_cluster_data_remote(tumor_type_array, gene)
-    logging.debug("CLUSTERS: " + repr(clusters))
     return clusters
 
 def sanitize_gene_input(param_string):
