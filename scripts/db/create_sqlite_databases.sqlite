@@ -1,3 +1,14 @@
-#!/usr/bin/env bash
+CREATE TABLE IF NOT EXISTS interpro_domains (uniprot_accession TEXT, interpro_id TEXT, name TEXT, database TEXT, start INT, end INT);
+.separator ","
+.import protein2ipr_pfam.sql.tsv interpro_domains
 
-CREATE TABLE interpro_domains (uniprot_accession text, interpro_id text, name text, database text, start int, end int);
+CREATE TABLE IF NOT EXISTS uniprot (primary_accession TEXT, entry_name TEXT, length TEXT, protein_name TEXT);
+.import uniprot.sql.tsv uniprot
+
+CREATE TABLE IF NOT EXISTS mutations (Cancer TEXT, gene TEXT, mutation_type TEXT, tumor_sample TEXT, dna_location TEXT, aa_change TEXT, protein_ID TEXT, aa_change_and_location TEXT, aa_location INT, aa1 TEXT, aa2 TEXT);
+.separator "\t"
+.import mutation_summary.filtered.tsv mutations
+
+CREATE TABLE IF NOT EXISTS clusters_tumor (cancer TEXT, gene TEXT, cluster TEXT, missense_mutations TEXT, nonsense_mutations TEXT, silent_mutations TEXT, included_in_gexp_analysis TEXT);
+.separator "\t"
+.import clusters_tumor_type_assignment.tsv clusters_tumor
