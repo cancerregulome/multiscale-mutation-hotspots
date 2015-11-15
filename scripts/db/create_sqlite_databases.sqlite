@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+CREATE TABLE interpro_domains (uniprot_accession text, interpro_id text, name text, database text, start int, end int);
