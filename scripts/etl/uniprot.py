@@ -1,4 +1,5 @@
 from csv import reader, DictWriter
+import logging
 from parsley import makeGrammar
 from StringIO import StringIO
 from sys import argv as sys_argv
@@ -22,6 +23,11 @@ record    = CRLF* ID:id AC:ac1 ACrest*:acr DT* DE:name REST -> {'ac_p': ac1[0], 
 UNIPROT_RECORD_TERMINATOR = re_compile('^//')
 FIELDNAMES = ['primary_accession', 'entry_name', 'length', 'protein_name']
 PRINT_LIMIT = 10000
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s %(levelname)s %(message)s',
+)
 
 
 class UniProtRecord(object):
@@ -74,7 +80,7 @@ def read_file(input_file_path):
             if count >= PRINT_LIMIT:
                 total_records += count
                 count = 0
-                print("Processed " + str(total_records))
+                logging.info("Processed " + str(total_records))
 
             try:
                 parsed = parse_chunk(chunk)
@@ -91,7 +97,6 @@ def read_file(input_file_path):
     infile.close()
 
 def load_uniprot_id_list_tsv(file_path):
-    #field = 'protein_ID'
     result = []
     csv_reader = reader(open(file_path, "rb"))
     for row in csv_reader:
@@ -112,7 +117,7 @@ def main():
     writer.writeheader()
 
     whitelist = build_uniprot_id_whitelist_from_tsv(whitelist_tsv_path)
-    print("Whitelist size: " + str(len(whitelist)))
+    logging.info("Whitelist size: " + str(len(whitelist)))
 
     for item in read_file(uniprot_sprot_dat_path):
         if item.primary_accession not in whitelist:
