@@ -1,4 +1,5 @@
-from csv import DictReader, DictWriter, reader
+from csv import DictWriter, reader
+import logging
 from sys import argv as sys_argv
 
 from gzip import open as gzip_open
@@ -7,6 +8,10 @@ from gzip import open as gzip_open
 FIELDNAMES = ['uniprot_accession', 'interpro_id', 'name', 'database', 'start', 'end']
 PRINT_LIMIT = 1000000
 
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s %(levelname)s %(message)s',
+)
 
 # Generator
 def read_file(input_file_path):
@@ -26,7 +31,7 @@ def read_file(input_file_path):
         if count >= PRINT_LIMIT:
             total_records += count
             count = 0
-            print("Processed " + str(total_records))
+            logging.info("Processed " + str(total_records))
 
         item = {}
         for index, field in enumerate(FIELDNAMES):
@@ -39,11 +44,10 @@ def read_file(input_file_path):
     infile.close()
 
 def load_uniprot_id_list_tsv(file_path):
-    field = 'protein_ID'
     result = []
-    reader = DictReader(open(file_path, "rb"), fieldnames=[field])
-    for row in reader:
-        result.append(row[field])
+    csv_reader = reader(open(file_path, "rb"))
+    for row in csv_reader:
+        result.append(row[0])
 
     return result
 
@@ -60,7 +64,7 @@ def main():
     writer.writeheader()
 
     whitelist = build_uniprot_id_whitelist_from_tsv(whitelist_tsv_path)
-    print("Whitelist size: " + str(len(whitelist)))
+    logging.info("Whitelist size: " + str(len(whitelist)))
 
     for item in read_file(protein2ipr_tsv_path):
         if item['uniprot_accession'] not in whitelist:
