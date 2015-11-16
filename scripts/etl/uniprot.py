@@ -1,4 +1,4 @@
-from csv import DictReader, DictWriter
+from csv import reader, DictWriter
 from parsley import makeGrammar
 from StringIO import StringIO
 from sys import argv as sys_argv
@@ -91,11 +91,11 @@ def read_file(input_file_path):
     infile.close()
 
 def load_uniprot_id_list_tsv(file_path):
-    field = 'protein_ID'
+    #field = 'protein_ID'
     result = []
-    reader = DictReader(open(file_path, "rb"), fieldnames=[field])
-    for row in reader:
-        result.append(row[field])
+    csv_reader = reader(open(file_path, "rb"))
+    for row in csv_reader:
+        result.append(row[0])
 
     return result
 
