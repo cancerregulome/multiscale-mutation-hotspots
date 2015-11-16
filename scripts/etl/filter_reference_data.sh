@@ -16,5 +16,5 @@ python ./uniprot.py $DATA_TRG/uniprot_ids.txt $DATA_ROOT/reference/uniprot_sprot
 # Filter InterPro reference dataset
 (
 echo "Filtering InterPro reference dataset..."
-python ./protein.py $DATA_TRG/uniprot_ids.txt $DATA_ROOT/reference/protein2ipr.dat.gz $DATA_TRG/protein2ipr_pfam.tsv 1>$LOGDIR/protein2ipr.log 2>&1
+python ./protein2ipr.py $DATA_TRG/uniprot_ids.txt $DATA_ROOT/reference/protein2ipr.dat.gz $DATA_TRG/protein2ipr_pfam.tsv 1>$LOGDIR/protein2ipr.log 2>&1
 ) &
