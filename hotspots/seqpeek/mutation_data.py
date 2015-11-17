@@ -34,7 +34,6 @@ def get_mutation_data(tumor_type_array, gene):
     db = sql_connection()
     cursor = db.cursor()
     cursor.execute(query, tuple(values))
-
     items = []
     for row in cursor.fetchall():
         cluster = parse_cluster(row)
@@ -42,4 +41,6 @@ def get_mutation_data(tumor_type_array, gene):
 
     cursor.close()
     db.close()
+
+    logging.debug("Found mutation rows: {num}".format(num=len(items)))
     return items
