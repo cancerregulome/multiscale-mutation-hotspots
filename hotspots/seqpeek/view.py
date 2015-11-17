@@ -7,6 +7,13 @@ from mock_data import EGFR_GBM_LGG as FAKE_PLOT_DATA
 from maf_api_mock_data import EGFR_BLCA_BRCA as FAKE_MAF_DATA
 from hotspots.seqpeek.tumor_types import tumor_types as ALL_TUMOR_TYPES
 
+logging.info("Loading gene list...")
+try:
+    from hotspots.seqpeek.gene_list import gene_list as GENE_LIST
+except ImportError:
+    logging.error("Loading gene list failed, using static list.")
+    GENE_LIST = ['EGFR', 'TP53', 'PTEN']
+
 from hotspots.seqpeek.uniprot_data import get_uniprot_data
 from hotspots.seqpeek.interpro_data import get_protein_domain_data
 from hotspots.seqpeek.cluster_data import get_cluster_data as get_cluster_data_remote
@@ -269,11 +276,11 @@ def seqpeek(request):
 
     plot_data['regions'] = build_seqpeek_regions(plot_data['protein'])
     plot_data['protein']['matches'] = filter_protein_domains(plot_data['protein']['matches'])
+    plot_data['gene_list'] = GENE_LIST
 
     tumor_list = ','.join(parsed_tumor_list)
 
     context.update({
-        # 'request': request,
         'search': {},
         'plot_data': plot_data,
         'data_bundle': json.dumps(plot_data),
