@@ -34,10 +34,32 @@ require([
             return;
         }
 
+        var GENE_LIST = __data_bundle.gene_list;
+
         $('#genes').autocomplete({
-            source: __data_bundle.gene_list,
+            source: GENE_LIST,
             minLength: 3,
             delay: 500
+        });
+
+        $('#gene-tumor-form').on("submit", function() {
+            var form = this;
+            var gene = $('#genes').val();
+
+            // Check that at least one tumor type is selected.
+            // .val return null if nothing is selected
+            var tumor_types = $('#tumor_type_select').val() | [];
+            if (tumor_types.length < 1) {
+                return false;
+            }
+
+            // Check that the gene is valid
+            if (GENE_LIST.lastIndexOf(gene) == -1) {
+                return false;
+            }
+
+            $(form).append('<input name="gene" value="' + gene + '" type="hidden" class="plot-attr" />');
+            return true;
         });
 
         var target_table = $(document).find("#seqpeek-table")[0];

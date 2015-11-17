@@ -3,10 +3,11 @@
 <!DOCTYPE html
         PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html" lang="en" xml:lang="en">
 <head>
     <title>Multiscale Mutation Hotspots</title>
     <link type="text/css" rel="stylesheet" href="{% static 'css/main.css' %}" />
+    <link type="text/css" rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}" />
     <link type="text/css" rel="stylesheet" href="{% static 'css/vq.css' %}" />
 
     <script type="text/javascript" src="{% static 'js/vendor/require.js' %}"></script>
@@ -74,9 +75,20 @@
         </tbody>
     </table>
 
-    <form action="/seqpeek">
-    {% for tumor_type in all_tumor_types %}
-        <input type="checkbox">{{ tumor_type }}</input><br/>
-    {% endfor %}
+    <form id="gene-tumor-form" action="seqpeek">
+        <label>Select tumor types</label>
+        <fieldset>
+            <select id="tumor_type_select" size="10" multiple="true" name="tumor">
+
+            {% for tumor_type in all_tumor_types %}
+                <option value="{{ tumor_type }}">{{ tumor_type }}</option>
+            {% endfor %}
+            </select>
+        <button type="submit">Redraw</button>
+        </fieldset>
     </form>
+    <div class="ui-widget">
+        <label for="genes">Select gene: </label>
+        <input id="genes">
+    </div>
 </body>
