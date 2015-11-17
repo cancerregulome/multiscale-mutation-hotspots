@@ -5,7 +5,7 @@ import re
 from django.shortcuts import render
 from mock_data import EGFR_GBM_LGG as FAKE_PLOT_DATA
 from maf_api_mock_data import EGFR_BLCA_BRCA as FAKE_MAF_DATA
-from hotspots.seqpeek.tumor_types import tumor_types as all_tumor_types
+from hotspots.seqpeek.tumor_types import tumor_types as ALL_TUMOR_TYPES
 
 from hotspots.seqpeek.uniprot_data import get_uniprot_data
 from hotspots.seqpeek.interpro_data import get_protein_domain_data
@@ -206,26 +206,25 @@ def sanitize_gene_input(param_string):
     return ALPHA_FINDER.sub('', param_string)
 
 def sanitize_normalize_tumor_type(tumor_type_list):
+    tumor_set = frozenset(ALL_TUMOR_TYPES)
     sanitized = []
-    for tumor_label in tumor_type_list:
-        tumor_label = tumor_label.strip()
-        tumor_label = ALPHA_FINDER.sub('', tumor_label)
-        if len(tumor_label) > 0:
-            sanitized.append(tumor_label)
+    for tumor_param in tumor_type_list:
+        if tumor_param in tumor_set:
+            sanitized.append(tumor_param)
 
     return sanitized
 
 def seqpeek(request):
     context = {}
 
-    if (('tumor_type' not in request.GET) or (request.GET['tumor_type'] == '')) or \
+    if (('tumor' not in request.GET) or (request.GET['tumor'] == '')) or \
             (('gene' not in request.GET) or (request.GET['gene'] == '')):
         return render(request, TEMPLATE_NAME, context)
 
     # Remove non-alphanumeric characters from parameters and uppercase all
     gene = sanitize_gene_input(request.GET['gene']).upper()
-    parsed_tumor_list = request.GET['tumor_type'].split(',')
-    parsed_tumor_list = sanitize_normalize_tumor_type(parsed_tumor_list)
+    parsed_tumor_list = sanitize_normalize_tumor_type(request.GET.getlist('tumor'))
+    logging.debug("Valid tumors from request: {0}".format(str(parsed_tumor_list)))
 
     if len(parsed_tumor_list) == 0:
         return render(request, TEMPLATE_NAME, context)
@@ -280,7 +279,7 @@ def seqpeek(request):
         'data_bundle': json.dumps(plot_data),
         'gene': gene,
         'tumor_list': tumor_list,
-        'all_tumor_types': all_tumor_types
+        'all_tumor_types': ALL_TUMOR_TYPES
     })
 
     return render(request, TEMPLATE_NAME, context)
