@@ -59,14 +59,6 @@ target/
 
 # Project ignorable files
 .DS_Store
-*.p12
-*.pem
-.sass-cache
-privatekey.json
-client_secrets.json
-settings.json
-advanced_settings.json
-
 
 # dummy datasets
 *.tsv
@@ -80,6 +72,6 @@ bower_components/*
 node_modules
 node_modules/*
 
-certs/*
-*.key
-*.crt
+# Generated code, databases
+mica.sqlite3
+gene_list.py
