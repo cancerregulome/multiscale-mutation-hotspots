@@ -29,12 +29,7 @@ require([
     vq
 ) {
     domReady(function() {
-        if (typeof __data_bundle == "undefined" || __data_bundle === "undefined") {
-            console.log("SeqPeek plot data bundle is undefined");
-            return;
-        }
-
-        var GENE_LIST = __data_bundle.gene_list;
+        var GENE_LIST = __static_data.gene_list;
 
         $('#genes').autocomplete({
             source: GENE_LIST,
@@ -61,6 +56,11 @@ require([
             $(form).append('<input name="gene" value="' + gene + '" type="hidden" class="plot-attr" />');
             return true;
         });
+
+        if (typeof __data_bundle == "undefined" || __data_bundle === "undefined") {
+            console.log("SeqPeek plot data bundle is undefined");
+            return;
+        }
 
         var target_table = $(document).find("#seqpeek-table")[0];
         var tableView = SeqPeekViewFactory.create(target_table, __data_bundle);

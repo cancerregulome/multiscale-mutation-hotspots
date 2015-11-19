@@ -222,7 +222,12 @@ def sanitize_normalize_tumor_type(tumor_type_list):
     return sanitized
 
 def seqpeek(request):
-    context = {}
+    context = {
+        'all_tumor_types': ALL_TUMOR_TYPES,
+        'static_data': {
+            'gene_list': GENE_LIST
+        }
+    }
 
     if (('tumor' not in request.GET) or (request.GET['tumor'] == '')) or \
             (('gene' not in request.GET) or (request.GET['gene'] == '')):
@@ -276,7 +281,6 @@ def seqpeek(request):
 
     plot_data['regions'] = build_seqpeek_regions(plot_data['protein'])
     plot_data['protein']['matches'] = filter_protein_domains(plot_data['protein']['matches'])
-    plot_data['gene_list'] = GENE_LIST
 
     tumor_list = ','.join(parsed_tumor_list)
 
@@ -286,7 +290,6 @@ def seqpeek(request):
         'data_bundle': json.dumps(plot_data),
         'gene': gene,
         'tumor_list': tumor_list,
-        'all_tumor_types': ALL_TUMOR_TYPES
     })
 
     return render(request, TEMPLATE_NAME, context)
