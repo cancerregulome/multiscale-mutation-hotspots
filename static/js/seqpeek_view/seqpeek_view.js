@@ -20,13 +20,12 @@ require([
     'jquery',
     'jquery-ac',
     'vq'
-
 ], function(
     domReady,
     SeqPeekViewFactory,
     __jquery,
     __jquery_ac,
-    vq
+    __vq
 ) {
     domReady(function() {
         var GENE_LIST = __static_data.gene_list;
