@@ -221,9 +221,21 @@ def sanitize_normalize_tumor_type(tumor_type_list):
 
     return sanitized
 
+def format_tumor_type_list(tumor_type_array, selected_types=[]):
+    result = []
+    for tumor_type in tumor_type_array:
+        result.append({
+            'name': tumor_type,
+            'selected': tumor_type in selected_types
+        })
+
+    return result
+
 def seqpeek(request):
+    tumor_types_for_tpl = format_tumor_type_list(ALL_TUMOR_TYPES)
+
     context = {
-        'all_tumor_types': ALL_TUMOR_TYPES,
+        'all_tumor_types': tumor_types_for_tpl,
         'static_data': {
             'gene_list': GENE_LIST
         }
@@ -237,6 +249,9 @@ def seqpeek(request):
     gene = sanitize_gene_input(request.GET['gene']).upper()
     parsed_tumor_list = sanitize_normalize_tumor_type(request.GET.getlist('tumor'))
     logging.debug("Valid tumors from request: {0}".format(str(parsed_tumor_list)))
+
+    tumor_types_for_tpl = format_tumor_type_list(ALL_TUMOR_TYPES, parsed_tumor_list)
+    context['all_tumor_types'] = tumor_types_for_tpl
 
     if len(parsed_tumor_list) == 0:
         return render(request, TEMPLATE_NAME, context)
