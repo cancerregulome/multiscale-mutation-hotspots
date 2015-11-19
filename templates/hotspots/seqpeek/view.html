@@ -16,15 +16,32 @@
     <script type="text/javascript" src="{% static 'js/seqpeek_view/seqpeek_view.js' %}"></script>
 </head>
 <body>
+    <script type="text/javascript">
+        __static_data = {{ static_data|safe }};
+    </script>
+
+    <form id="gene-tumor-form" action="seqpeek">
+        <label>Select tumor types</label>
+        <fieldset>
+            <select id="tumor_type_select" size="10" multiple="true" name="tumor">
+
+                {% for tumor_type in all_tumor_types %}
+                    <option value="{{ tumor_type }}">{{ tumor_type }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Redraw</button>
+        </fieldset>
+    </form>
+    <div class="ui-widget">
+        <label for="genes">Select gene: </label>
+        <input id="genes">
+    </div>
+
     {% if plot_data %}
         <h2>SeqPeek {{ plot_data.gene_label}}</h2>
     {% else %}
         <h2>SeqPeek</h2>
     {% endif %}
-
-    <script type="text/javascript">
-        __static_data = {{ static_data|safe }};
-    </script>
 
     {% if plot_data %}
         <table id="seqpeek-table">
@@ -81,20 +98,4 @@
         </tbody>
     </table>
 
-    <form id="gene-tumor-form" action="seqpeek">
-        <label>Select tumor types</label>
-        <fieldset>
-            <select id="tumor_type_select" size="10" multiple="true" name="tumor">
-
-            {% for tumor_type in all_tumor_types %}
-                <option value="{{ tumor_type }}">{{ tumor_type }}</option>
-            {% endfor %}
-            </select>
-        <button type="submit">Redraw</button>
-        </fieldset>
-    </form>
-    <div class="ui-widget">
-        <label for="genes">Select gene: </label>
-        <input id="genes">
-    </div>
 </body>
