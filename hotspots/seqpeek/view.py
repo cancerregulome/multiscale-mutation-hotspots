@@ -1,18 +1,18 @@
 from copy import deepcopy
 import json
-import logging
 import re
 from flask import render_template
 from mock_data import EGFR_GBM_LGG as FAKE_PLOT_DATA
 from maf_api_mock_data import EGFR_BLCA_BRCA as FAKE_MAF_DATA
 from hotspots.seqpeek.tumor_types import tumor_types as ALL_TUMOR_TYPES
 
-_log = logging.getLogger("werkzeug")
+from app_logging import get_logger
+log = get_logger()
 
 try:
     from hotspots.seqpeek.gene_list import gene_list as GENE_LIST
 except ImportError:
-    _log.error("Loading gene list failed, using static list.")
+    log.error("Loading gene list failed, using static list.")
     GENE_LIST = ['EGFR', 'TP53', 'PTEN']
 
 from hotspots.seqpeek.uniprot_data import get_uniprot_data
@@ -131,12 +131,12 @@ def process_raw_domain_data(data):
 
         result.append(domain)
 
-    _log.debug("Found {total} domains, filtered down to {num}".format(total=len(data), num=len(result)))
+    log.debug("Found {total} domains, filtered down to {num}".format(total=len(data), num=len(result)))
     return result
 
 def get_protein_domains_remote(uniprot_id):
     uniprot_data = get_uniprot_data(uniprot_id)
-    _log.debug("UniProt entry: " + str(uniprot_data))
+    log.debug("UniProt entry: " + str(uniprot_data))
 
     # Add protein domain data to the UniProt entry
     raw_domain_data = get_protein_domain_data(uniprot_id)
@@ -242,29 +242,22 @@ def seqpeek(request_gene, request_tumor_list):
         }
     }
 
-    #if (('tumor' not in request.GET) or (request.GET['tumor'] == '')) or \
-    #        (('gene' not in request.GET) or (request.GET['gene'] == '')):
-    #    return render(request, TEMPLATE_NAME, context)
-
     # Remove non-alphanumeric characters from parameters and uppercase all
-    # gene = sanitize_gene_input(request.GET['gene']).upper()
-    # parsed_tumor_list = sanitize_normalize_tumor_type(request.GET.getlist('tumor'))
     gene = sanitize_gene_input(request_gene).upper()
     parsed_tumor_list = sanitize_normalize_tumor_type(request_tumor_list)
-    _log.debug("Valid tumors from request: {0}".format(str(parsed_tumor_list)))
+    log.debug("Valid tumors from request: {0}".format(str(parsed_tumor_list)))
 
     tumor_types_for_tpl = format_tumor_type_list(ALL_TUMOR_TYPES, parsed_tumor_list)
     context['all_tumor_types'] = tumor_types_for_tpl
 
     if len(parsed_tumor_list) == 0:
-        #return render(request, TEMPLATE_NAME, context)
         return render_template(TEMPLATE_NAME, **context)
 
     cluster_data = get_cluster_data(parsed_tumor_list, gene)
 
     maf_data = get_mutation_data(gene, parsed_tumor_list)
     uniprot_id = find_uniprot_id(maf_data)
-    _log.debug("Found UniProt ID: " + repr(uniprot_id))
+    log.debug("Found UniProt ID: " + repr(uniprot_id))
 
     protein_data = get_protein_domains(uniprot_id)
     track_data = build_track_data(parsed_tumor_list, maf_data, cluster_data)
