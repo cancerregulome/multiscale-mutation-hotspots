@@ -189,11 +189,20 @@ def process_cluster_data_for_tumor(all_clusters, tumor_type):
 def build_track_data(tumor_type_list, all_tumor_mutations, all_clusters):
     tracks = []
     for tumor_type in tumor_type_list:
-        tracks.append({
+        mutations = filter(lambda m: m['tumor_type'] == tumor_type, all_tumor_mutations);
+
+        track_obj = {
             TUMOR_TYPE_FIELD: tumor_type,
-            'mutations': filter(lambda m: m['tumor_type'] == tumor_type, all_tumor_mutations),
+            'mutations': mutations,
             'clusters': process_cluster_data_for_tumor(all_clusters, tumor_type)
-        })
+        }
+
+        if len(mutations) > 0:
+            track_obj['render_in_seqpeek'] = True
+        else:
+            track_obj['render_in_seqpeek'] = False
+
+        tracks.append(track_obj)
 
     return tracks
 
@@ -294,16 +303,26 @@ def seqpeek(request_gene, request_tumor_list):
     plot_data['regions'] = build_seqpeek_regions(plot_data['protein'])
     plot_data['protein']['matches'] = filter_protein_domains(plot_data['protein']['matches'])
 
+    # Filter the tracks-array for Seqpeek. Only leave tracks with at least one mutation.
+    seqpeek_data = {key: plot_data[key] for key in ['gene_label', 'protein', 'regions']}
+    seqpeek_tracks = []
+    for track in plot_data['tracks']:
+        if len(track['mutations']) > 0:
+            seqpeek_tracks.append(track)
+        else:
+            log.debug("{0}: 0 mutations, not rendering in SeqPeek.".format(track['label']))
+
+    seqpeek_data['tracks'] = seqpeek_tracks
+
     tumor_list = ','.join(parsed_tumor_list)
 
     context.update({
         'search': {},
         'plot_data': plot_data,
-        'data_bundle': json.dumps(plot_data),
+        'data_bundle': json.dumps(seqpeek_data),
         'gene': gene,
         'tumor_list': tumor_list,
     })
 
-    #return render(request, TEMPLATE_NAME, context)
     return render_template(TEMPLATE_NAME, **context)
 
