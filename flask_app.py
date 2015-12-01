@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 
 from app_logging import get_logger
 from hotspots.seqpeek.view import seqpeek as seqpeek_view
@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def landing_page():
-    return("Landing page")
+    return(render_template("hotspots/landing.html"))
 
 
 @app.route('/seqpeek/',  defaults={'gene': '', 'tumor': ''})
