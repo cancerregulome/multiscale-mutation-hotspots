@@ -1,4 +1,5 @@
 import logging
+_log = logging.getLogger("werkzeug")
 
 from hotspots.database_util import sql_connection
 
@@ -14,7 +15,7 @@ def get_uniprot_data(uniprot_id):
                 'WHERE primary_accession=?'
     query = query_tpl.format(uniprot_table=UNIPROT_TABLE)
 
-    logging.debug("UNIPROT SQL: " + query)
+    _log.debug("UNIPROT SQL: " + query)
 
     values = [uniprot_id]
 

@@ -1,5 +1,6 @@
-#from MySQLdb.cursors import DictCursor
-import logging
+from app_logging import get_logger
+log = get_logger()
+
 import re
 
 from hotspots.database_util import sql_connection
@@ -31,13 +32,12 @@ def get_cluster_data(tumor_type_array, gene):
                 'WHERE gene=? AND cancer IN ({tumor_stmt})'
     query = query_tpl.format(cluster_table=CLUSTER_TABLE, tumor_stmt=tumor_stmt)
 
-    logging.debug("CLUSTER SQL: " + query)
+    log.debug("CLUSTER SQL: " + query)
 
     values = [gene]
     values.extend(tumor_type_array)
 
     db = sql_connection()
-    #cursor = db.cursor(DictCursor)
     cursor = db.cursor()
     cursor.execute(query, tuple(values))
 

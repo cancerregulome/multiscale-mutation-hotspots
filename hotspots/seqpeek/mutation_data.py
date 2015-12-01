@@ -1,4 +1,5 @@
-import logging
+from app_logging import get_logger
+log = get_logger()
 
 from hotspots.database_util import sql_connection
 
@@ -26,7 +27,7 @@ def get_mutation_data(tumor_type_array, gene):
                 'WHERE gene=? AND Cancer IN ({tumor_stmt})'
     query = query_tpl.format(mutation_table=MUTATION_TABLE, tumor_stmt=tumor_stmt)
 
-    logging.debug("MUTATION SQL: " + query)
+    log.debug("MUTATION SQL: " + query)
 
     values = [gene]
     values.extend(tumor_type_array)
@@ -42,5 +43,5 @@ def get_mutation_data(tumor_type_array, gene):
     cursor.close()
     db.close()
 
-    logging.debug("Found mutation rows: {num}".format(num=len(items)))
+    log.debug("Found mutation rows: {num}".format(num=len(items)))
     return items

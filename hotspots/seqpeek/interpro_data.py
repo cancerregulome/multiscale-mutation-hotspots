@@ -1,4 +1,5 @@
-import logging
+from app_logging import get_logger
+log = get_logger()
 
 from hotspots.database_util import sql_connection
 
@@ -14,7 +15,7 @@ def get_protein_domain_data(uniprot_id):
                 'WHERE uniprot_accession=?'
     query = query_tpl.format(interpro_table=INTERPRO_TABLE)
 
-    logging.debug("INTERPRO SQL: " + query)
+    log.debug("INTERPRO SQL: " + query)
 
     values = [uniprot_id]
 
