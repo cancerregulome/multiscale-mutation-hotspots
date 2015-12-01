@@ -12,3 +12,11 @@ CREATE TABLE IF NOT EXISTS mutations (Cancer TEXT, gene TEXT, mutation_type TEXT
 CREATE TABLE IF NOT EXISTS clusters_tumor (cancer TEXT, gene TEXT, cluster TEXT, missense_mutations TEXT, nonsense_mutations TEXT, silent_mutations TEXT, included_in_gexp_analysis TEXT);
 .separator "\t"
 .import clusters_tumor_type_assignment.tsv clusters_tumor
+
+CREATE TABLE IF NOT EXISTS pathway_assoc (gene TEXT, cluster TEXT, cancer TEXT, pathway_name TEXT, pval FLOAT, fdr FLOAT, missense_mutations INT, nonsense_mutations INT, silent_mutations INT);
+.separator "\t"
+.import pathway_associations.tsv pathway_assoc
+
+CREATE TABLE IF NOT EXISTS pathway_web_links(pathway TEXT, url TEXT);
+.separator "\t"
+.import pathway_web_links.tsv pathway_web_links
