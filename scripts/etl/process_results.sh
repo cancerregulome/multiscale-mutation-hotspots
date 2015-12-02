@@ -23,11 +23,11 @@ cat $DATA_SRC/mutation_summary.tsv | grep -v UNIPROT_FAIL > $DATA_TRG/mutation_s
 
 # Find unique UniProt accession codes from the mutation summary
 echo "Finding UniProt accession codes..."
-cat $DATA_TRG/mutation_summary.tsv | cut -f 7 | awk '!array[$1]++' > $DATA_TRG/uniprot_ids.txt
+cat $DATA_TRG/mutation_summary.filtered.tsv | cut -f 7 | awk '!array[$1]++' > $DATA_TRG/uniprot_ids.txt
 
 # Find unique genes from the mutation summary
 echo "Generating gene list for Python..."
 echo "gene_list = [" > $DATA_TRG/gene_list.py
-cat $DATA_TRG/mutation_summary.tsv | cut -f 2| awk '!array[$1]++' | awk '{printf("    \"%s\",\n", $0);}' >> $DATA_TRG/gene_list.py
+cat $DATA_TRG/mutation_summary.filtered.tsv | cut -f 2| awk '!array[$1]++' | awk '{printf("    \"%s\",\n", $0);}' >> $DATA_TRG/gene_list.py
 echo "]" >> $DATA_TRG/gene_list.py
 
