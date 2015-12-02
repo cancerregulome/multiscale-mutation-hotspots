@@ -19,7 +19,7 @@ cat $DATA_SRC/sup_tbl_5_pathway_gexp_associations.tsv | tail -n+2 | cut -f 1-9 >
 
 # Remove UNIPROT_FAIL lines from the mutation summary
 echo "Filtering mutation summary..."
-cat $DATA_SRC/mutation_summary.tsv | grep -v UNIPROT_FAIL > $DATA_TRG/mutation_summary.tsv
+cat $DATA_SRC/mutation_summary.tsv | grep -v UNIPROT_FAIL > $DATA_TRG/mutation_summary.filtered.tsv
 
 # Find unique UniProt accession codes from the mutation summary
 echo "Finding UniProt accession codes..."
