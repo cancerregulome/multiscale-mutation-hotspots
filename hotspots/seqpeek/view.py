@@ -306,6 +306,9 @@ def seqpeek(request_gene, request_tumor_list):
     seqpeek_tracks = []
     for track in plot_data['tracks']:
         if len(track['mutations']) > 0:
+            # Gene has to be passed to the track object, so that it can be used
+            # to construct the URI for the pathway association view
+            track['gene'] = gene
             seqpeek_tracks.append(track)
         else:
             log.debug("{0}: 0 mutations, not rendering in SeqPeek.".format(track['label']))

@@ -202,6 +202,7 @@ function (
 
             _.each(this.data_bundle['tracks'], function (track) {
                 seqpeek_data.push({
+                    gene: track['gene'],
                     clusters: track['clusters'],
                     variants: track['mutations'],
                     tumor_type: track['label'],
@@ -294,6 +295,7 @@ function (
         },
 
         __render_tracks: function(tracks, region_array, protein_domain_matches, seqpeek_tick_track_element) {
+            var self = this;
             var seqpeek_config = this.__build_seqpeek_config(region_array);
             var seqpeek = SeqPeekBuilder.create(seqpeek_config);
 
@@ -327,6 +329,9 @@ function (
                 // Use a protein domain track to render the clusters.
                 if (track_obj.is_summary_track == false) {
                     var clusters = track_obj['clusters'];
+                    var tumor_type = track_obj['tumor_type'];
+                    var gene = track_obj['gene'];
+
                     seqpeek.addProteinDomainTrackToElement(clusters, region_track_g, {
                         color_scheme: {
                             'cluster': '#FD8F42'
@@ -345,6 +350,16 @@ function (
                             },
                             "Synonymous": function (d) {
                                 return d.mutation_stats.silent_mutations;
+                            }
+                        },
+                        hovercard_links: {
+                           "Pathway Associations": {
+                                label: 'pathways',
+                                url: '/',
+                                href: function (d) {
+                                    var cluster = d.start + '-' + d.end;
+                                    return self.__build_pathway_view_uri(gene, tumor_type, cluster);
+                                }
                             }
                         }
                     });
@@ -645,7 +660,13 @@ function (
             }
 
             this.selection_handler(this.selected_patient_ids);
+        },
+
+        __build_pathway_view_uri: function(gene, tumor_type, cluster) {
+            var pathway_uri = "/pathway/?tumor=" + tumor_type + "&gene=" + gene + "&cluster=" + cluster;
+            return pathway_uri;
         }
+
     };
 
     return {
