@@ -2,7 +2,6 @@ from copy import deepcopy
 import json
 import re
 from flask import render_template
-from mock_data import EGFR_GBM_LGG as FAKE_PLOT_DATA
 from maf_api_mock_data import EGFR_BLCA_BRCA as FAKE_MAF_DATA
 from hotspots.seqpeek.tumor_types import tumor_types as ALL_TUMOR_TYPES
 
@@ -99,10 +98,6 @@ def get_track_label(track):
     return track[TUMOR_TYPE_FIELD]
 
 
-def get_protein_domains_local_debug(uniprot_id):
-    return deepcopy(FAKE_PLOT_DATA['protein'])
-
-
 def process_raw_domain_data(data):
     result = []
     for item in data:
@@ -113,7 +108,8 @@ def process_raw_domain_data(data):
             continue
 
         domain = {
-            'name': item['name'],
+            'name': item['name'][:5] + '...',
+            'full_name': item['name'],
             'locations': [{
                 'start': item['start'],
                 'end': item['end']
@@ -122,7 +118,7 @@ def process_raw_domain_data(data):
             'ipr': {
                 'type': 'Domain',
                 'id': item['interpro_id'],
-                'name': item['name']
+                'name': item['name'][:2]
             },
             'id': database
         }
@@ -131,6 +127,7 @@ def process_raw_domain_data(data):
 
     log.debug("Found {total} domains, filtered down to {num}".format(total=len(data), num=len(result)))
     return result
+
 
 def get_protein_domains_remote(uniprot_id):
     uniprot_data = get_uniprot_data(uniprot_id)
@@ -144,21 +141,11 @@ def get_protein_domains_remote(uniprot_id):
 
 
 def get_protein_domains(uniprot_id):
-    if SEQPEEK_VIEW_DEBUG_MODE:
-        return get_protein_domains_local_debug(uniprot_id)
-    else:
-        return get_protein_domains_remote(uniprot_id)
-
-
-def get_maf_data_debug(gene, tumor_type_list):
-    return deepcopy(FAKE_PLOT_DATA['tracks'])
+    return get_protein_domains_remote(uniprot_id)
 
 
 def get_maf_data_remote(gene, tumor_type_list):
-    if SEQPEEK_VIEW_MUTATION_DEBUG:
-        return get_maf_data_debug(gene, tumor_type_list)
-    else:
-        return get_mutation_data_remote(tumor_type_list, gene)
+    return get_mutation_data_remote(tumor_type_list, gene)
 
 
 def get_mutation_data(gene, tumor_type_list):

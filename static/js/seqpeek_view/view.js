@@ -379,7 +379,7 @@ function (
                                 return d.id;
                             },
                             "Name": function (d) {
-                                return d.name;
+                                return d.full_name;
                             },
                             "LOC": function (d) {
                                 return d.start + " - " + d.end;
