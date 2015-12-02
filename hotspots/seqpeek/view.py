@@ -36,8 +36,6 @@ ALPHA_FINDER = re.compile('[\W_]+', re.UNICODE)
 TEMPLATE_NAME = 'hotspots/seqpeek/view.html'
 
 def get_number_of_unique_samples(track):
-    # todo: change this to get total_rows from bigquery endpoint
-    # note: result from this function isn't the same as total_rows from bigquery
     sample_ids = set()
     for mutation in track['mutations']:
         sample_ids.add(mutation[SAMPLE_ID_FIELD_NAME])
