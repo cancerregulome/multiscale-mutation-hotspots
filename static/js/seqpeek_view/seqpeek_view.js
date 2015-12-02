@@ -38,7 +38,7 @@ require([
 
         $('#gene-tumor-form').on("submit", function() {
             var form = this;
-            var gene = $('#genes').val();
+            var gene = $('#genes').val().toUpperCase();
 
             // Check that at least one tumor type is selected.
             // .val return null if nothing is selected
