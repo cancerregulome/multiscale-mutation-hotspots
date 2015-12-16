@@ -1,10 +1,6 @@
-<!DOCTYPE html
-        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html" lang="en" xml:lang="en">
-<head>
-    <title>Multiscale Mutation Hotspots</title>
-    <link type="text/css" rel="stylesheet" href="/static/css/main.css" />
+{% extends "hotspots/base.html" %}
+{% block head %}
+    {{ super() }}
     <link type="text/css" rel="stylesheet" href="/static/css/jquery-ui.min.css" />
     <link type="text/css" rel="stylesheet" href="/static/css/vq.css" />
 
@@ -12,8 +8,9 @@
     <script type="text/javascript" src="/static/js/seqpeek_view/vendor/d3.min.js"></script>
     <script type="text/javascript" src="/static/js/vendor/require.js"></script>
     <script type="text/javascript" src="/static/js/seqpeek_view/seqpeek_view.js"></script>
-</head>
-<body>
+{% endblock %}
+{% block title %}Clusters - {{ plot_data.gene_label }}{% endblock %}
+{% block content %}
     <script type="text/javascript">
         __static_data = {{ static_data|safe }};
     </script>
@@ -96,5 +93,4 @@
             </tr>
         </tbody>
     </table>
-
-</body>
+{% endblock %}
