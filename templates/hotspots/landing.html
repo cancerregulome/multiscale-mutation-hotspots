@@ -5,7 +5,38 @@
 <head>
     <title>Multiscale Mutation Hotspots</title>
     <link type="text/css" rel="stylesheet" href="/static/css/main.css" />
+    <link type="text/css" rel="stylesheet" href="/static/css/landing.css" />
 </head>
 <body>
-Multiscale Mutation Hotspots
+    <div class="title">
+        <a href="/">Multiscale Mutation Hotspots</a>
+    </div>
+    <div class="abstract">
+        We have developed a novel information theory based multi-scale clustering algorithm for identifying variable
+        length mutational hotspots within cancer genes. We ran our algorithm on the combined mutation data from 23 tumor
+        types from The Cancer Genome Atlas (TCGA). We found a diverse set of clusters with wide variability in size and
+        mutation count. Additionally we integrated our mutation clusters with gene expression data from TCGA to
+        associate clusters with global changes in gene expression and specific molecular pathways. Our findings allow us
+        to identify mutation clusters which are associated changes in gene expression phenotype. Additionally we have
+        used our pathway association analysis to identify multiple clusters within individual genes which have
+        differential associations: specifically
+        <a href="/seqpeek/?gene=PTEN&tumor=UCEC">PTEN</a>,
+        <a href="/seqpeek/?gene=FUBP1&tumor=LGG">FUBP1</a>, and
+        <a href="/seqpeek/?gene=CDH1&tumor=UCEC">BRCA</a>
+        These cases may be indicative of differential
+        functional consequences to genetic mutations within different regions of the same gene.
+    </div>
+    <div class="method_summary">
+        <img src="/static/img/methodology_summary.png"/>
+        <span>
+            1) 549 genes with a total of 33507 pan-cancer mutations are run through our multiscale clustering algorithm
+            resulting in 1255 clusters. More text...
+        </span>
+    </div>
+    <div class="algorithm_overview">
+        <a href="/seqpeek/?gene=PTEN&tumor=UCEC"><img src="/static/img/algorithm_overview.png"/></a>
+        <span>
+            Our algorithm identifies mutation clusters at multiple scales. More text...
+        </span>
+    </div>
 </body>
