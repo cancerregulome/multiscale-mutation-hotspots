@@ -1,4 +1,6 @@
 from flask import Flask, request, render_template
+from jinja2 import FileSystemLoader
+import os
 
 from app_logging import get_logger
 from hotspots.seqpeek.view import seqpeek as seqpeek_view
@@ -8,6 +10,7 @@ log = get_logger()
 
 app = Flask(__name__)
 
+TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 
 @app.route('/')
 def landing_page():
@@ -32,3 +35,4 @@ def pathway_assoc(gene, tumor, cluster):
 
 if __name__ == '__main__':
     app.run(debug=True)
+    app.jinja_loader = FileSystemLoader(TEMPLATE_DIR)
