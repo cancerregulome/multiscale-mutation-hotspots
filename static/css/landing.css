@@ -1,0 +1,24 @@
+.abstract {
+
+}
+
+.abstract a {
+    text-decoration: none;
+}
+
+.method_summary {
+    text-align: right;
+}
+
+.method_summary img {
+    vertical-align: middle;
+}
+
+.algorithm_overview {
+    text-align: right;
+}
+
+.algorithm_overview img {
+    vertical-align: middle;
+}
+
