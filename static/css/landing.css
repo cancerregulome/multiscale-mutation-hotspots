@@ -1,24 +1,37 @@
 .abstract {
-
+    line-height: 1.5em;
 }
 
 .abstract a {
-    text-decoration: none;
+    color: #00467f;
+}
+
+.abstract a:hover {
+    color: #d5df3e;
 }
 
 .method_summary {
-    text-align: right;
+    display: block;
+    margin: 15px 0px;
+    text-align: left;
 }
 
 .method_summary img {
-    vertical-align: middle;
+    vertical-align: top;
+    margin-right: 20px
 }
 
 .algorithm_overview {
-    text-align: right;
+    display: block;
+    margin: 15px 0px;
+}
+
+.algorithm_overview {
+    text-align: left;
 }
 
 .algorithm_overview img {
-    vertical-align: middle;
+    vertical-align: top;
+    margin-right: 20px;
 }
 
