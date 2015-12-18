@@ -1,0 +1,16 @@
+table th {
+    text-align: left;
+    padding: 5px 10px;
+}
+
+table td {
+    padding: 5px 10px;
+}
+
+table td a {
+    color: #00467f;
+}
+
+table td a:hover {
+    color: #d5df3e;
+}
