@@ -453,10 +453,10 @@ function (
 
         __render_scales: function(track_selector, total_track_height, track_statistics, scale_type_label) {
             if (track_statistics.max_samples_in_location <= 2) {
-                this.__render_scales_minimal(track_selector, total_track_height, track_statistics, scale_type_label);
+                this.__render_scales_minimal(track_selector, total_track_height, track_statistics, "");
             }
             else {
-                this.__render_scales_full(track_selector, total_track_height, track_statistics, scale_type_label);
+                this.__render_scales_full(track_selector, total_track_height, track_statistics, "");
             }
         },
 
@@ -529,10 +529,12 @@ function (
                 })
                 .style("text-anchor", "end");
 
-            axis.append("svg:text")
-                .attr("x", type_label_x)
-                .attr("y", type_label_y)
-                .text(scale_type_label);
+            if (scale_type_label !== undefined && scale_type_label.length > 0) {
+                axis.append("svg:text")
+                    .attr("x", type_label_x)
+                    .attr("y", type_label_y)
+                    .text(scale_type_label);
+            }
 
             axis.append("svg:text")
                 .attr("x", 0)
@@ -569,10 +571,12 @@ function (
                 .attr("font-size", y_axis_label_font_size)
                 .text("min " + track_statistics.min_samples_in_location);
 
-            axis.append("svg:text")
-                .attr("x", type_label_x)
-                .attr("y", type_label_y)
-                .text(scale_type_label);
+            if (scale_type_label !== undefined && scale_type_label.length > 0) {
+                axis.append("svg:text")
+                    .attr("x", type_label_x)
+                    .attr("y", type_label_y)
+                    .text(scale_type_label);
+            }
 
             axis.append("svg:text")
                 .attr("x", 0)
