@@ -45,6 +45,7 @@ def pathway_assoc_view(request_gene, request_tumor_type, request_cluster):
 
     template_args.update({
         'gene_label': gene,
+        'cluster': request_cluster,
         'tumor_type': tumor_type,
         'pathways': sorted_pathways,
         'data_found': True
