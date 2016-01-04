@@ -460,6 +460,23 @@ function (
             }
         },
 
+        /*
+         * Renders scale information on the left side of a track. The rendered elements include vertical scale line and
+         * ticks with values indicating numbers of samples.
+         *
+         * Parameters:
+         * track_selector:
+         *   D3 selector for the track element
+         * total_track_height:
+         *   Track height
+         * track_statistics:
+         *   Track statistics object
+         * scale_type_label:
+         *   String that indicates the type of the scale used to determine the height of the elements
+         *   on the track, for example "lin" or "log". If empty string or undefined, the element for
+         *   the label will not be added to the track.
+         *
+         */
         __render_scales_full: function(track_selector, total_track_height, track_statistics, scale_type_label) {
             var y_axis_label_font_size = 10;
             var y_axis_label_x = 10;
@@ -545,6 +562,23 @@ function (
                 .text("Samples in location");
         },
 
+        /*
+         * Renders scale information on the left side of a track. The rendered elements include vertical scale line and
+         * indicators for minimum and maximum numbers of samples shown on the track.
+         *
+         * Parameters:
+         * track_selector:
+         *   D3 selector for the track element
+         * total_track_height:
+         *   Track height
+         * track_statistics:
+         *   Track statistics object
+         * scale_type_label:
+         *   String that indicates the type of the scale used to determine the height of the elements
+         *   on the track, for example "lin" or "log". If empty string or undefined, the element for
+         *   the label will not be added to the track.
+         *
+         */
         __render_scales_minimal: function(track_selector, total_track_height, track_statistics, scale_type_label) {
             var y_axis_label_font_size = 10;
             var y_axis_label_x = 10;
