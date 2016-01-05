@@ -1,4 +1,4 @@
-.abstract {
+.text-content {
     line-height: 1.5em;
 }
 
@@ -11,27 +11,33 @@
 }
 
 .method_summary {
-    display: block;
-    margin: 15px 0px;
-    text-align: left;
+    margin: 15px;
 }
 
 .method_summary img {
+    display: inline-block;
     vertical-align: top;
-    margin-right: 20px
+}
+
+.method_summary span {
+    display: inline-block;
+    padding: 0 15px 0 15px;
+    width: 600px;
 }
 
 .algorithm_overview {
-    display: block;
-    margin: 15px 0px;
-}
-
-.algorithm_overview {
-    text-align: left;
+    margin: 15px;
 }
 
 .algorithm_overview img {
+    display: inline-block;
     vertical-align: top;
     margin-right: 20px;
+}
+
+.algorithm_overview span {
+    display: inline-block;
+    text-align: left;
+    width: 430px;
 }
 

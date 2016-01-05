@@ -5,7 +5,7 @@
 {% endblock %}
 {% block title %}Multiscale Mutation Hotspots{% endblock %}
 {%  block content %}
-    <div class="abstract">
+    <div class="abstract text-content">
         We have developed a novel information theory based multi-scale clustering algorithm for identifying variable
         length mutational hotspots within cancer genes. We ran our algorithm on the combined mutation data from 23 tumor
         types from The Cancer Genome Atlas (TCGA). We found a diverse set of clusters with wide variability in size and
@@ -16,21 +16,20 @@
         differential associations: specifically
         <a href="/seqpeek/?gene=PTEN&tumor=UCEC">PTEN</a>,
         <a href="/seqpeek/?gene=FUBP1&tumor=LGG">FUBP1</a>, and
-        <a href="/seqpeek/?gene=CDH1&tumor=UCEC">BRCA</a>
+        <a href="/seqpeek/?gene=CDH1&tumor=BRCA">BRCA</a>
         These cases may be indicative of differential
         functional consequences to genetic mutations within different regions of the same gene.
     </div>
     <div class="method_summary">
         <img width="430" height="631" src="static/img/methodology_summary.png"/>
-        <span>
-            1) 549 genes with a total of 33507 pan-cancer mutations are run through our multiscale clustering algorithm
-            resulting in 1255 clusters. More text...
+        <span class="text-content">
+            1) 549 genes with a total of 33507 pan-cancer mutations are run through our multiscale clustering algorithm resulting in 1255 clusters. 2) Clusters are assigned to 4471 tumors samples across 23 tumor types creating a binary feature matrix. A tumor is said to be positive for a cluster if there is any non-synonymous mutation in the tumor and the cluster. 4) The binary feature matrices are statistically compared to 2194 gene expression features separately for each cancer type using the Kruskal-Wallis Test. 5) The pairwise P-values from the Kruskal-Wallis tests are combined globally and on the pathway level using the Empirical Brown’s Method across 172 Pathways. This resulted in 546810 association p-values.
         </span>
     </div>
     <div class="algorithm_overview">
-        <a href="/seqpeek/?gene=PTEN&tumor=UCEC"><img width="624" height="347" src="static/img/algorithm_overview.png"/></a>
-        <span>
-            Our algorithm identifies mutation clusters at multiple scales. More text...
+        <span class="text-content">
+            Our algorithm identifies mutation clusters at multiple scales. Each scale represents different sized genetic features. First, our algorithm converts TCGA mutation calls from all 23 cancers into multiple continuous probability density functions (A). This smoothing is done using a kernel density estimate (KDE) with a Gaussian kernel at 28 different bandwidths between 2 and 450 (amino acids units). Each bandwidth represents a different length scale of amino acid features ranging from single amino acids to entire protein domains (B). These KDEs are each used to seed a multivariate mixture model consisting of n Gaussians and 1 uniform distribution, where n is the number of local maxima in a given KDE. The noise weight is initially estimated by the fraction of silent mutations in the gene. The mean of each Gaussian is initially estimated by the locations of a local maxima of the KDE. The standard deviation of each Guassian is estimated by the distance between the two adjacent local minima around a given maxima. Finally, the weight of each Gaussian in the mixture model is estimated by the density at the local maxima minus one-nth of the noise weight. An expectation maximization algorithm then optimizes the mixture model ( C blue bars). This process results in a set of clusters for each scale.
         </span>
+        <a href="/seqpeek/?gene=PTEN&tumor=UCEC"><img width="624" height="347" src="static/img/algorithm_overview.png"/></a>
     </div>
 {% endblock %}
