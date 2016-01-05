@@ -1,22 +1,28 @@
+DROP TABLE IF EXISTS interpro_domains;
 CREATE TABLE IF NOT EXISTS interpro_domains (uniprot_accession TEXT, interpro_id TEXT, name TEXT, database TEXT, start INT, end INT);
 .separator ","
 .import protein2ipr_pfam.sql.tsv interpro_domains
 
+DROP TABLE IF EXISTS uniprot;
 CREATE TABLE IF NOT EXISTS uniprot (primary_accession TEXT, entry_name TEXT, length TEXT, protein_name TEXT);
 .import uniprot.sql.tsv uniprot
 
+DROP TABLE IF EXISTS mutations;
 CREATE TABLE IF NOT EXISTS mutations (Cancer TEXT, gene TEXT, mutation_type TEXT, tumor_sample TEXT, dna_location TEXT, aa_change TEXT, protein_ID TEXT, aa_change_and_location TEXT, aa_location INT, aa1 TEXT, aa2 TEXT);
 .separator "\t"
 .import mutation_summary.filtered.tsv mutations
 
+DROP TABLE IF EXISTS clusters_tumor;
 CREATE TABLE IF NOT EXISTS clusters_tumor (cancer TEXT, gene TEXT, cluster TEXT, missense_mutations TEXT, nonsense_mutations TEXT, silent_mutations TEXT, included_in_gexp_analysis TEXT);
 .separator "\t"
 .import clusters_tumor_type_assignment.tsv clusters_tumor
 
+DROP TABLE IF EXISTS pathway_assoc;
 CREATE TABLE IF NOT EXISTS pathway_assoc (gene TEXT, cluster TEXT, cancer TEXT, pathway_name TEXT, pval FLOAT, fdr FLOAT, missense_mutations INT, nonsense_mutations INT, silent_mutations INT);
 .separator "\t"
 .import pathway_associations.tsv pathway_assoc
 
-CREATE TABLE IF NOT EXISTS pathway_web_links(pathway TEXT, url TEXT);
+DROP TABLE IF EXISTS pathway_web_links;
+CREATE TABLE IF NOT EXISTS pathway_web_links (pathway TEXT, url TEXT);
 .separator "\t"
 .import pathway_web_links.tsv pathway_web_links

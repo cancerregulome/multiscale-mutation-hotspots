@@ -17,6 +17,10 @@ cat $DATA_SRC/sup_tbl_2_clusters_tumor_type_assignment.tsv | tail -n+2 > $DATA_T
 echo "Pathway associations..."
 cat $DATA_SRC/sup_tbl_5_pathway_gexp_associations.tsv | tail -n+2 | cut -f 1-9 > $DATA_TRG/pathway_associations.tsv
 
+# Remove header and clean trailing whitespace from pathway web links
+echo "Pathway web links..."
+python ./weblinks.py < $DATA_SRC/PathwayWebLinks.tsv > $DATA_TRG/pathway_web_links.tsv
+
 # Remove UNIPROT_FAIL lines from the mutation summary
 echo "Filtering mutation summary..."
 cat $DATA_SRC/mutation_summary.tsv | grep -v UNIPROT_FAIL > $DATA_TRG/mutation_summary.filtered.tsv
