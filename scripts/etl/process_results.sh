@@ -23,7 +23,7 @@ python ./weblinks.py < $DATA_SRC/PathwayWebLinks.tsv > $DATA_TRG/pathway_web_lin
 
 # Remove UNIPROT_FAIL lines from the mutation summary
 echo "Filtering mutation summary..."
-cat $DATA_SRC/mutation_summary.tsv | grep -v UNIPROT_FAIL > $DATA_TRG/mutation_summary.filtered.tsv
+python ./mutations.py < $DATA_SRC/mutation_summary.tsv | grep -v UNIPROT_FAIL > $DATA_TRG/mutation_summary.filtered.tsv
 
 # Find unique UniProt accession codes from the mutation summary
 echo "Finding UniProt accession codes..."
