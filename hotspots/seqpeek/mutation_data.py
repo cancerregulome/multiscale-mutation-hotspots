@@ -18,6 +18,7 @@ def parse_cluster(row):
         'amino_acid_wildtype': row['aa2']
     }
 
+
 def get_mutation_data(tumor_type_array, gene):
     # Generate the 'IN' statement string: (%s, %s, ..., %s)
     tumor_stmt = ', '.join(['?' for tumor in tumor_type_array])
@@ -44,4 +45,28 @@ def get_mutation_data(tumor_type_array, gene):
     db.close()
 
     log.debug("Found mutation rows: {num}".format(num=len(items)))
+    return items
+
+
+def get_mutation_data_summary_for_gene(gene):
+    query_tpl = 'SELECT Cancer as tumor_type, gene, protein_ID, tumor_sample AS patient_id, mutation_type, aa_change, aa_location, aa1, aa2 ' \
+                'FROM {mutation_table} ' \
+                'WHERE gene=?'
+    query = query_tpl.format(mutation_table=MUTATION_TABLE)
+
+    log.debug("MUTATION SUMMARY SQL: " + query)
+
+    db = sql_connection()
+    cursor = db.cursor()
+    cursor.execute(query, (gene, ))
+
+    items = []
+    for row in cursor.fetchall():
+        cluster = parse_cluster(row)
+        items.append(cluster)
+
+    cursor.close()
+    db.close()
+
+    log.debug("Found mutation summary rows: {num}".format(num=len(items)))
     return items
