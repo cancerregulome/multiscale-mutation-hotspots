@@ -16,24 +16,9 @@
         __static_data = {{ static_data|safe }};
     </script>
 
-    <form id="gene-tumor-form" action="/seqpeek">
-        <div class="ui-widget">
-            <label>Select tumor types:</label>
-            <select id="tumor_type_select" size="10" multiple="true" name="tumor">
-                {% for tumor_type in all_tumor_types %}
-                    <option value="{{ tumor_type.name }}"
-                    {%  if tumor_type.selected %}selected="selected"{%  endif %}>{{ tumor_type.name }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="ui-widget">
-            <label for="genes">Select gene: </label>
-            <input id="genes">
-        </div>
-        <button type="submit">Redraw</button>
-    </form>
-
+    {% if gene_select_widget %}
+        {% include "hotspots/gene-select-widget.html" %}
+    {% endif %}
 
     {% if plot_data %}
         <h2>SeqPeek {{ plot_data.gene_label}}</h2>

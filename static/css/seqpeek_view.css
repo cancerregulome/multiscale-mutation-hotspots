@@ -24,6 +24,23 @@
     cursor: pointer;
 }
 
+#tumor_type_select {
+
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    height: 120px;
+}
+
+#tumor_type_select option {
+    padding: 3px 5px;
+    font-size: 15px;
+}
+
+#tumor_type_select option[selected="selected"] {
+    background-color: #f7991b !important;
+    color: #fff;
+}
+
 .ui-widget {
     display: inline-block;
     vertical-align: top;
@@ -41,19 +58,3 @@
     padding: 3px 5px;
 }
 
-#tumor_type_select {
-
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    height: 120px;
-}
-
-#tumor_type_select option {
-    padding: 3px 5px;
-    font-size: 15px;
-}
-
-#tumor_type_select option[selected="selected"] {
-    background-color: #f7991b !important;
-    color: #fff;
-}

@@ -227,10 +227,7 @@ def format_tumor_type_list(tumor_type_array, selected_types=[]):
     return result
 
 def seqpeek(request_gene, request_tumor_list):
-    tumor_types_for_tpl = format_tumor_type_list(ALL_TUMOR_TYPES)
-
     context = {
-        'all_tumor_types': tumor_types_for_tpl,
         'static_data': {
             'gene_list': GENE_LIST
         }
@@ -305,6 +302,10 @@ def seqpeek(request_gene, request_tumor_list):
     tumor_list = ','.join(parsed_tumor_list)
 
     context.update({
+        'gene_select_widget': {
+            'action': '/seqpeek',
+            'all_tumor_types': tumor_types_for_tpl,
+        },
         'search': {},
         'plot_data': plot_data,
         'data_bundle': json.dumps(seqpeek_data),

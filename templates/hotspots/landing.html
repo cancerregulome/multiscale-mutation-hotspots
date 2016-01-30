@@ -1,10 +1,21 @@
 {% extends "hotspots/base.html" %}
 {% block head %}
     {{ super() }}
+    <link type="text/css" rel="stylesheet" href="/static/css/jquery-ui.min.css" />
     <link type="text/css" rel="stylesheet" href="/static/css/landing.css" />
+
+    <script type="text/javascript" src="/static/js/vendor/require.js"></script>
+    <script type="text/javascript" src="/static/js/landing_view.js"></script>
 {% endblock %}
 {% block title %}Multiscale Mutation Hotspots{% endblock %}
-{%  block content %}
+{% block content %}
+    <script type="text/javascript">
+        __static_data = {{ static_data|safe }};
+    </script>
+
+   {% if gene_select_widget %}
+        {% include "hotspots/gene-select-widget.html" %}
+   {% endif %}
     <div class="abstract text-content">
         We have developed a novel information theory based multi-scale clustering algorithm for identifying variable
         length mutational hotspots within cancer genes. We ran our algorithm on the combined mutation data from 23 tumor
