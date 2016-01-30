@@ -1,5 +1,6 @@
 {% with gsw=gene_select_widget %}
 <form id="gene-tumor-form" action="{{ gsw.action }}">
+    {% if gsw.tumor_type_select %}
     <div class="ui-widget">
         <label>Select tumor types:</label>
         <select id="tumor_type_select" size="10" multiple="true" name="tumor">
@@ -10,10 +11,15 @@
             {% endfor %}
         </select>
     </div>
+    {% endif %}
     <div class="ui-widget">
         <label for="genes">Select gene: </label>
         <input id="genes">
     </div>
+    {% if gsw.include_summary_paramater %}
+        <input type="hidden" name="summary" value="true"/>
+    {% endif %}
+
     <button type="submit">Redraw</button>
 </form>
 {% endwith %}

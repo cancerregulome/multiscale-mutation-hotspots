@@ -244,11 +244,11 @@ def seqpeek(request_gene, request_tumor_list, summary_only=False):
     tumor_types_for_tpl = format_tumor_type_list(ALL_TUMOR_TYPES, parsed_tumor_list)
     context['all_tumor_types'] = tumor_types_for_tpl
 
-    if len(parsed_tumor_list) == 0:
+    if len(parsed_tumor_list) == 0 and summary_only is False:
         return render_template(TEMPLATE_NAME, **context)
 
-    cluster_data = get_cluster_data(parsed_tumor_list, gene)
     if summary_only is False:
+        cluster_data = get_cluster_data(parsed_tumor_list, gene)
         maf_data = get_mutation_data(gene, parsed_tumor_list)
     else:
         maf_data = get_mutation_data_summary_for_gene(gene)
@@ -318,6 +318,7 @@ def seqpeek(request_gene, request_tumor_list, summary_only=False):
     context.update({
         'gene_select_widget': {
             'action': '/seqpeek',
+            'tumor_type_select': True,
             'all_tumor_types': tumor_types_for_tpl,
         },
         'search': {},

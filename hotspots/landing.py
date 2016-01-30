@@ -25,7 +25,9 @@ def landing_page_view():
         },
         'gene_select_widget': {
             'action': '/seqpeek',
-            'all_tumor_types': tumor_types_for_tpl
+            'tumor_type_select': False,
+            'all_tumor_types': tumor_types_for_tpl,
+            'include_summary_paramater': True
         },
     }
 
