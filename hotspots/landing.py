@@ -27,7 +27,8 @@ def landing_page_view():
             'action': '/seqpeek',
             'tumor_type_select': False,
             'all_tumor_types': tumor_types_for_tpl,
-            'include_summary_paramater': True
+            'include_summary_paramater': True,
+            'button_label': 'Find mutations'
         },
     }
 

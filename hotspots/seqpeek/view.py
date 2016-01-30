@@ -320,6 +320,7 @@ def seqpeek(request_gene, request_tumor_list, summary_only=False):
             'action': '/seqpeek',
             'tumor_type_select': True,
             'all_tumor_types': tumor_types_for_tpl,
+            'button_label': 'Redraw'
         },
         'search': {},
         'plot_data': plot_data,
