@@ -207,6 +207,7 @@ function (
                     variants: track['mutations'],
                     tumor_type: track['label'],
                     row_id: track['render_info']['row_id'],
+                    do_variant_layout: track['do_variant_layout'],
                     is_summary_track: track['type'] == 'summary',
                     track_type: track['type'] == 'summary' ? 'bar_plot' : undefined,
                     y_axis_type: this.sample_track_type_user_setting == "sample_plot" ? "lin" : "log2"
@@ -642,51 +643,16 @@ function (
         __add_data_track: function(track_obj, seqpeek_builder, track_target_svg) {
             var track_type = track_obj.track_type || this.sample_track_type_user_setting;
             var variants = track_obj.variants;
+            var skip_layout = !track_obj.do_variant_layout;
 
             if (track_type == "sample_plot") {
                 return seqpeek_builder.addSamplePlotTrackWithArrayData(variants, track_target_svg, {
-                }, track_obj.is_summary_track);
+                }, skip_layout);
             }
-            else {
+            else if (track_type == "bar_plot") {
                 return seqpeek_builder.addBarPlotTrackWithArrayData(track_obj.variants, track_target_svg, {
                     max_samples_in_location: this.maximum_samples_in_location
-                }, track_obj.is_summary_track);
-            }
-        },
-
-        toggle_interaction_mode: function() {
-            if (this.current_interaction_mode == INTERACTION_MODES.SELECT) {
-                this.current_interaction_mode = INTERACTION_MODES.ZOOM;
-            }
-            else {
-                this.current_interaction_mode = INTERACTION_MODES.SELECT;
-            }
-
-            this.__apply_interaction_mode(this.current_interaction_mode);
-        },
-
-        set_selection_handler: function(handler) {
-            this.selection_handler = handler;
-        },
-
-        get_interaction_mode: function() {
-            var mode_string_desc = {};
-            mode_string_desc[INTERACTION_MODES.ZOOM] = 'zoom';
-            mode_string_desc[INTERACTION_MODES.SELECT] = 'select';
-
-            return mode_string_desc[this.current_interaction_mode];
-        },
-
-        __apply_interaction_mode: function(mode) {
-            if (this.seqpeek === undefined) {
-                return;
-            }
-
-            if (mode == INTERACTION_MODES.SELECT) {
-                this.seqpeek.toggleSelectionMode();
-            }
-            else if (mode == INTERACTION_MODES.ZOOM) {
-                this.seqpeek.toggleZoomMode();
+                }, skip_layout);
             }
         },
 

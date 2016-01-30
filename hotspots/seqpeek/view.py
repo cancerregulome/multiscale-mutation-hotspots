@@ -18,6 +18,7 @@ from hotspots.seqpeek.uniprot_data import get_uniprot_data
 from hotspots.seqpeek.interpro_data import get_protein_domain_data
 from hotspots.seqpeek.cluster_data import get_cluster_data as get_cluster_data_remote
 from hotspots.seqpeek.mutation_data import get_mutation_data as get_mutation_data_remote
+from hotspots.seqpeek.mutation_data import get_mutation_data_summary_for_gene
 
 SEQPEEK_VIEW_DEBUG_MODE = False
 SEQPEEK_VIEW_MUTATION_DEBUG = False
@@ -81,7 +82,7 @@ def build_seqpeek_regions(protein_data):
     }]
 
 
-def build_summary_track(tracks):
+def build_summary_track(tracks, render_summary_only=False):
     all = []
     for track in tracks:
         all.extend(track["mutations"])
@@ -90,7 +91,8 @@ def build_summary_track(tracks):
         'mutations': all,
         'label': 'COMBINED',
         'tumor': 'none-combined',
-        'type': 'summary'
+        'type': 'summary',
+        'do_variant_layout': True if render_summary_only is True else False
     }
 
 
@@ -179,7 +181,8 @@ def build_track_data(tumor_type_list, all_tumor_mutations, all_clusters):
         track_obj = {
             TUMOR_TYPE_FIELD: tumor_type,
             'mutations': mutations,
-            'clusters': process_cluster_data_for_tumor(all_clusters, tumor_type)
+            'clusters': process_cluster_data_for_tumor(all_clusters, tumor_type),
+            'do_variant_layout': True
         }
 
         if len(mutations) > 0:
@@ -226,7 +229,7 @@ def format_tumor_type_list(tumor_type_array, selected_types=[]):
 
     return result
 
-def seqpeek(request_gene, request_tumor_list):
+def seqpeek(request_gene, request_tumor_list, summary_only=False):
     context = {
         'static_data': {
             'gene_list': GENE_LIST
@@ -245,34 +248,45 @@ def seqpeek(request_gene, request_tumor_list):
         return render_template(TEMPLATE_NAME, **context)
 
     cluster_data = get_cluster_data(parsed_tumor_list, gene)
+    if summary_only is False:
+        maf_data = get_mutation_data(gene, parsed_tumor_list)
+    else:
+        maf_data = get_mutation_data_summary_for_gene(gene)
 
-    maf_data = get_mutation_data(gene, parsed_tumor_list)
     uniprot_id = find_uniprot_id(maf_data)
     log.debug("Found UniProt ID: " + repr(uniprot_id))
 
     protein_data = get_protein_domains(uniprot_id)
-    track_data = build_track_data(parsed_tumor_list, maf_data, cluster_data)
 
     plot_data = {
         'gene_label': gene,
-        'tracks': track_data,
         'protein': protein_data
     }
 
-    # Pre-processing
-    # - Sort mutations by chromosomal coordinate
-    for track in plot_data['tracks']:
-        track['mutations'] = sort_track_mutations(track['mutations'])
+    if summary_only is False:
+        track_data = build_track_data(parsed_tumor_list, maf_data, cluster_data)
+        plot_data['tracks'] = track_data
 
-    # Annotations
-    # - Add label, possibly human readable
-    # - Add type that indicates whether the track is driven by data from search or
-    #   if the track is aggregate
-    for track in plot_data['tracks']:
-        track['type'] = 'tumor'
-        track['label'] = get_track_label(track)
+        # Pre-processing
+        # - Sort mutations by chromosomal coordinate
+        for track in plot_data['tracks']:
+            track['mutations'] = sort_track_mutations(track['mutations'])
 
-    plot_data['tracks'].append(build_summary_track(plot_data['tracks']))
+        # Annotations
+        # - Add label, possibly human readable
+        # - Add type that indicates whether the track is driven by data from search or
+        #   if the track is aggregate
+        for track in plot_data['tracks']:
+            track['type'] = 'tumor'
+            track['label'] = get_track_label(track)
+
+        plot_data['tracks'].append(build_summary_track(plot_data['tracks'], render_summary_only=False))
+
+    else:
+        summary_track = {
+            'mutations': sort_track_mutations(maf_data)
+        }
+        plot_data['tracks'] = [build_summary_track([summary_track], render_summary_only=True)]
 
     for track in plot_data['tracks']:
         # Calculate statistics

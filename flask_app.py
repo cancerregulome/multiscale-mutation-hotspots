@@ -19,11 +19,15 @@ def landing_page():
     #return(render_template("hotspots/landing.html"))
 
 
-@app.route('/seqpeek/',  defaults={'gene': '', 'tumor': ''})
-def seqpeek(gene, tumor):
+@app.route('/seqpeek/',  defaults={'gene': '', 'tumor': '', 'summary': ''})
+def seqpeek(gene, tumor, summary):
     request_gene = request.args.get('gene')
     request_tumor_list = [str(t) for t in request.args.getlist('tumor')]
-    return seqpeek_view(request_gene, request_tumor_list)
+    summary = False
+    if request.args.get('summary') == 'true':
+        summary = True
+
+    return seqpeek_view(request_gene, request_tumor_list, summary_only=summary)
 
 
 @app.route('/pathway/', defaults={'gene': '', 'tumor': '', 'cluster': ''})
