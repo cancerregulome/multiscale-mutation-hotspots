@@ -1,0 +1,52 @@
+<table id="seqpeek-table">
+    <thead>
+    <tr>
+        <th>Tumor Type</th>
+        <th>Samples (#)</th>
+        <th style="text-align: center;">
+            <canvas id="seqpeek-mini-locator" width="400" height="24"></canvas>
+            <svg height="24">
+                <rect x="5" y="1" height="21" width="10" style="stroke: red; fill-opacity: 0.0;"></rect>
+                <text x="20" y="15" font-size="10">current view</text>
+                <rect x="85" y="7" height="10" width="30" style="fill: rgb(170,170,170); stroke-opacity: 0.0;"></rect>
+                <text x="120" y="15" font-size="10">whole protein</text>
+            </svg>
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for track in plot_data.tracks %}
+        <tr>
+            <td>{{ track.label }}</td>
+            <td>{{ track.statistics.samples.numberOf }}</td>
+            <td id="{{ track.render_info.row_id }}"></td>
+        </tr>
+    {% endfor %}
+    <tr>
+        <td></td>
+        <td></td>
+        <td id="seqpeek-tick-element"></td>
+    </tr>
+    </tbody>
+</table>
+<script type="text/javascript">
+    __data_bundle = {{ data_bundle|safe }};
+</script>
+<table>
+    <thead>
+    <tr>
+        <th>Color</th>
+        <th>Value</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td style="width: 30px; background-color: #FD8F42"></td>
+        <td>Cluster</td>
+    </tr>
+    <tr>
+        <td style="width: 30px; background-color: #84ACBA"></td>
+        <td>Domain</td>
+    </tr>
+    </tbody>
+</table>

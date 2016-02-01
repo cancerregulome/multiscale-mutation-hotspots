@@ -230,16 +230,25 @@ def format_tumor_type_list(tumor_type_array, selected_types=[]):
     return result
 
 def seqpeek(request_gene, request_tumor_list, summary_only=False):
-    context = {
-        'static_data': {
-            'gene_list': GENE_LIST
-        }
-    }
-
     # Remove non-alphanumeric characters from parameters and uppercase all
     gene = sanitize_gene_input(request_gene).upper()
     parsed_tumor_list = sanitize_normalize_tumor_type(request_tumor_list)
     log.debug("Valid tumors from request: {0}".format(str(parsed_tumor_list)))
+
+    context = {
+        'query_status': {
+            'no_mutations_found': False,
+            'uniprot_id_not_found': False,
+            'data_found': False,
+            'summary_only': False,
+            'request_gene': request_gene
+        },
+        'gene': gene,
+        'is_gene_summary': summary_only,
+        'static_data': {
+            'gene_list': GENE_LIST
+        }
+    }
 
     tumor_types_for_tpl = format_tumor_type_list(ALL_TUMOR_TYPES, parsed_tumor_list)
     context['all_tumor_types'] = tumor_types_for_tpl
@@ -253,8 +262,19 @@ def seqpeek(request_gene, request_tumor_list, summary_only=False):
     else:
         maf_data = get_mutation_data_summary_for_gene(gene)
 
+    if len(maf_data) == 0:
+        context['query_status']['no_mutations_found'] = True
+        return render_template(TEMPLATE_NAME, **context)
+
     uniprot_id = find_uniprot_id(maf_data)
+
+    if uniprot_id is None:
+        context['query_status']['uniprot_id_not_found'] = True
+        return render_template(TEMPLATE_NAME, **context)
+
     log.debug("Found UniProt ID: " + repr(uniprot_id))
+
+    context['query_status']['data_found'] = True
 
     protein_data = get_protein_domains(uniprot_id)
 
