@@ -5,11 +5,13 @@ from hotspots.database_util import sql_connection
 
 UNIPROT_TABLE = 'uniprot'
 
-class UniProtEntryNotFound(Exception):
-    def __init__(self, uniprot_id):
-        self.message = uniprot_id
 
 def get_uniprot_data(uniprot_id):
+    """
+
+    :param uniprot_id:
+    :return:
+    """
     query_tpl = 'SELECT primary_accession, entry_name, length, protein_name ' \
                 'FROM {uniprot_table} ' \
                 'WHERE primary_accession=?'
@@ -32,6 +34,6 @@ def get_uniprot_data(uniprot_id):
     db.close()
 
     if len(items) == 0:
-        raise UniProtEntryNotFound(uniprot_id)
+        return None
 
     return items[0]
