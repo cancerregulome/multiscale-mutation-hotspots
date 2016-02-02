@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, abort, request, render_template
 from jinja2 import FileSystemLoader
 import os
 
@@ -13,30 +13,45 @@ app = Flask(__name__)
 
 TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 
+@app.errorhandler(500)
+def error_500(error):
+    return render_template('hotspots/error.html')
+
 @app.route('/')
 def landing_page():
-    return landing_page_view()
-    #return(render_template("hotspots/landing.html"))
+    try:
+        return landing_page_view()
+    except Exception as e:
+        log.exception(e)
+        abort(500)
 
 
 @app.route('/seqpeek/',  defaults={'gene': '', 'tumor': '', 'summary': ''})
 def seqpeek(gene, tumor, summary):
-    request_gene = request.args.get('gene')
-    request_tumor_list = [str(t) for t in request.args.getlist('tumor')]
-    summary = False
-    if request.args.get('summary') == 'true':
-        summary = True
+    try:
+        request_gene = request.args.get('gene')
+        request_tumor_list = [str(t) for t in request.args.getlist('tumor')]
+        summary = False
+        if request.args.get('summary') == 'true':
+            summary = True
 
-    return seqpeek_view(request_gene, request_tumor_list, summary_only=summary)
+        return seqpeek_view(request_gene, request_tumor_list, summary_only=summary)
+    except Exception as e:
+        log.exception(e)
+        abort(500)
 
 
 @app.route('/pathway/', defaults={'gene': '', 'tumor': '', 'cluster': ''})
 def pathway_assoc(gene, tumor, cluster):
-    request_gene = request.args.get('gene')
-    request_tumor = request.args.get('tumor')
-    request_cluster = request.args.get('cluster')
-    log.debug("{0} {1} {2}".format(request_gene, request_tumor, request_cluster))
-    return pathway_assoc_view(request_gene, request_tumor, request_cluster)
+    try:
+        request_gene = request.args.get('gene')
+        request_tumor = request.args.get('tumor')
+        request_cluster = request.args.get('cluster')
+        log.debug("{0} {1} {2}".format(request_gene, request_tumor, request_cluster))
+        return pathway_assoc_view(request_gene, request_tumor, request_cluster)
+    except Exception as e:
+        log.exception(e)
+        abort(500)
 
 
 if __name__ == '__main__':
