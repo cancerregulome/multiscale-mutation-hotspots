@@ -207,8 +207,8 @@ def get_cluster_data(tumor_type_array, gene):
     clusters = get_cluster_data_remote(tumor_type_array, gene)
     return clusters
 
-def sanitize_gene_input(param_string):
-    return ALPHA_FINDER.sub('', param_string)
+def sanitize_gene_input(gene_parameter):
+    return ALPHA_FINDER.sub('', gene_parameter)
 
 def sanitize_normalize_tumor_type(tumor_type_list):
     tumor_set = frozenset(ALL_TUMOR_TYPES)
@@ -231,7 +231,10 @@ def format_tumor_type_list(tumor_type_array, selected_types=[]):
 
 def seqpeek(request_gene, request_tumor_list, summary_only=False):
     # Remove non-alphanumeric characters from parameters and uppercase all
-    gene = sanitize_gene_input(request_gene).upper()
+    gene = None
+    if request_gene is not None:
+        gene = sanitize_gene_input(request_gene).upper()
+
     parsed_tumor_list = sanitize_normalize_tumor_type(request_tumor_list)
     log.debug("Valid tumors from request: {0}".format(str(parsed_tumor_list)))
 
@@ -241,6 +244,7 @@ def seqpeek(request_gene, request_tumor_list, summary_only=False):
             'uniprot_id_not_found': False,
             'data_found': False,
             'summary_only': False,
+            'insufficient_parameters': False,
             'request_gene': request_gene
         },
         'gene': gene,
@@ -253,7 +257,14 @@ def seqpeek(request_gene, request_tumor_list, summary_only=False):
     tumor_types_for_tpl = format_tumor_type_list(ALL_TUMOR_TYPES, parsed_tumor_list)
     context['all_tumor_types'] = tumor_types_for_tpl
 
-    if len(parsed_tumor_list) == 0 and summary_only is False:
+    if (len(parsed_tumor_list) == 0 and summary_only is False) or gene is None:
+        context['query_status']['insufficient_parameters'] = True
+        context['gene_select_widget'] = {
+            'action': '/seqpeek',
+            'tumor_type_select': True,
+            'all_tumor_types': tumor_types_for_tpl,
+            'button_label': 'Redraw'
+        }
         return render_template(TEMPLATE_NAME, **context)
 
     if summary_only is False:

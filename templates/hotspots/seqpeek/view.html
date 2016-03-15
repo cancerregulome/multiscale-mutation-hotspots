@@ -30,6 +30,12 @@
     {% elif query_status.uniprot_id_not_found %}
         <h2>SeqPeek</h2>
         <div class="no-pathway-assoc">No associated UniProt data found for gene {{ gene }}</div>
+    {% elif query_status.insufficient_parameters %}
+        <h2>SeqPeek</h2>
+        <div class="no-pathway-assoc">
+            No cancer types or gene selected.
+            Please select at least one cancer type and the gene from the drop down menu above.
+        </div>
     {% endif %}
 
     {% if plot_data %}
