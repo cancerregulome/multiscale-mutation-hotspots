@@ -230,15 +230,23 @@ def format_tumor_type_list(tumor_type_array, selected_types=[]):
     return result
 
 def seqpeek(request_gene, request_tumor_list, summary_only=False):
-    # Remove non-alphanumeric characters from parameters and uppercase all
     gene = None
     if request_gene is not None:
+        # Remove non-alphanumeric characters from parameters and uppercase all
         gene = sanitize_gene_input(request_gene).upper()
 
     parsed_tumor_list = sanitize_normalize_tumor_type(request_tumor_list)
     log.debug("Valid tumors from request: {0}".format(str(parsed_tumor_list)))
 
+    tumor_types_for_tpl = format_tumor_type_list(ALL_TUMOR_TYPES, parsed_tumor_list)
+
     context = {
+        'gene_select_widget': {
+            'action': '/seqpeek',
+            'tumor_type_select': True,
+            'all_tumor_types': tumor_types_for_tpl,
+            'button_label': 'Redraw'
+        },
         'query_status': {
             'no_mutations_found': False,
             'uniprot_id_not_found': False,
@@ -247,24 +255,22 @@ def seqpeek(request_gene, request_tumor_list, summary_only=False):
             'insufficient_parameters': False,
             'request_gene': request_gene
         },
-        'gene': gene,
+        'gene_label': gene,
         'is_gene_summary': summary_only,
         'static_data': {
-            'gene_list': GENE_LIST
-        }
+            'gene_list': GENE_LIST,
+            'gene_label': gene,
+            'fill_in_gene': True
+        },
+        'all_tumor_types': tumor_types_for_tpl
     }
-
-    tumor_types_for_tpl = format_tumor_type_list(ALL_TUMOR_TYPES, parsed_tumor_list)
-    context['all_tumor_types'] = tumor_types_for_tpl
 
     if (len(parsed_tumor_list) == 0 and summary_only is False) or gene is None:
         context['query_status']['insufficient_parameters'] = True
-        context['gene_select_widget'] = {
-            'action': '/seqpeek',
-            'tumor_type_select': True,
-            'all_tumor_types': tumor_types_for_tpl,
-            'button_label': 'Redraw'
-        }
+        context['static_data']['fill_in_gene'] = False
+        context.update({
+            'static_data': json.dumps(context['static_data'])
+        })
         return render_template(TEMPLATE_NAME, **context)
 
     if summary_only is False:
@@ -275,12 +281,20 @@ def seqpeek(request_gene, request_tumor_list, summary_only=False):
 
     if len(maf_data) == 0:
         context['query_status']['no_mutations_found'] = True
+        context['static_data']['fill_in_gene'] = False
+        context.update({
+            'static_data': json.dumps(context['static_data'])
+        })
         return render_template(TEMPLATE_NAME, **context)
 
     uniprot_id = find_uniprot_id(maf_data)
 
     if uniprot_id is None:
         context['query_status']['uniprot_id_not_found'] = True
+        context['static_data']['fill_in_gene'] = False
+        context.update({
+            'static_data': json.dumps(context['static_data'])
+        })
         return render_template(TEMPLATE_NAME, **context)
 
     log.debug("Found UniProt ID: " + repr(uniprot_id))
@@ -290,12 +304,12 @@ def seqpeek(request_gene, request_tumor_list, summary_only=False):
     protein_data = get_protein_domains(uniprot_id)
 
     plot_data = {
-        'gene_label': gene,
         'protein': protein_data
     }
 
     if summary_only is False:
         track_data = build_track_data(parsed_tumor_list, maf_data, cluster_data)
+        plot_data['gene_label'] = gene
         plot_data['tracks'] = track_data
 
         # Pre-processing
@@ -347,17 +361,14 @@ def seqpeek(request_gene, request_tumor_list, summary_only=False):
     tumor_list = ','.join(parsed_tumor_list)
 
     context.update({
-        'gene_select_widget': {
-            'action': '/seqpeek',
-            'tumor_type_select': True,
-            'all_tumor_types': tumor_types_for_tpl,
-            'button_label': 'Redraw'
-        },
         'search': {},
         'plot_data': plot_data,
         'data_bundle': json.dumps(seqpeek_data),
         'gene': gene,
-        'tumor_list': tumor_list,
+        'tumor_list': tumor_list
+    })
+    context.update({
+        'static_data': json.dumps(context['static_data'])
     })
 
     return render_template(TEMPLATE_NAME, **context)

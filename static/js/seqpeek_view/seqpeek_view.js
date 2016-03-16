@@ -29,12 +29,19 @@ require([
 ) {
     domReady(function() {
         var GENE_LIST = __static_data.gene_list;
+        var gene_label;
 
         $('#genes').autocomplete({
             source: GENE_LIST,
             minLength: 3,
             delay: 500
         });
+
+        if (__static_data['fill_in_gene'] === true) {
+            gene_label = __static_data['gene_label'];
+            console.log(gene_label);
+            $('#genes').val(gene_label);
+        }
 
         $('#gene-tumor-form').on("submit", function() {
             var form = this;

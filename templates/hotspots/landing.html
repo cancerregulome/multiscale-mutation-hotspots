@@ -4,15 +4,14 @@
     <link type="text/css" rel="stylesheet" href="/static/css/jquery-ui.min.css" />
     <link type="text/css" rel="stylesheet" href="/static/css/landing.css" />
 
+    <script type="text/javascript">
+        __static_data = {{ static_data|safe }};
+    </script>
     <script type="text/javascript" src="/static/js/vendor/require.js"></script>
     <script type="text/javascript" src="/static/js/landing_view.js"></script>
 {% endblock %}
 {% block title %}Multiscale Mutation Hotspots{% endblock %}
 {% block content %}
-    <script type="text/javascript">
-        __static_data = {{ static_data|safe }};
-    </script>
-
    {% if gene_select_widget %}
         {% include "hotspots/gene-select-widget.html" %}
    {% endif %}
