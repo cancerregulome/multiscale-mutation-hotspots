@@ -304,12 +304,12 @@ def seqpeek(request_gene, request_tumor_list, summary_only=False):
     protein_data = get_protein_domains(uniprot_id)
 
     plot_data = {
+        'gene_label': gene,
         'protein': protein_data
     }
 
     if summary_only is False:
         track_data = build_track_data(parsed_tumor_list, maf_data, cluster_data)
-        plot_data['gene_label'] = gene
         plot_data['tracks'] = track_data
 
         # Pre-processing
