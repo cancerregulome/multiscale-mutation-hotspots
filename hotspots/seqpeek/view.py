@@ -168,7 +168,8 @@ def process_cluster_data_for_tumor(all_clusters, tumor_type):
                 'start': cluster['start'],
                 'end': cluster['end']
             }],
-            'mutation_stats': cluster['mutation_stats']
+            'mutation_stats': cluster['mutation_stats'],
+            'stats': cluster['stats']
         }
         result.append(item)
     return result
