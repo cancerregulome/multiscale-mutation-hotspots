@@ -26,3 +26,8 @@ DROP TABLE IF EXISTS pathway_web_links;
 CREATE TABLE IF NOT EXISTS pathway_web_links (pathway TEXT, url TEXT);
 .separator "\t"
 .import pathway_web_links.tsv pathway_web_links
+
+DROP TABLE IF EXISTS cluster_scores;
+CREATE TABLE IF NOT EXISTS cluster_scores (gene TEXT, cluster TEXT, cluster_score FLOAT);
+.separator "\t"
+.import cluster_scores.tsv cluster_scores
