@@ -351,6 +351,9 @@ function (
                             },
                             "Synonymous": function (d) {
                                 return d.mutation_stats.silent_mutations;
+                            },
+                            "Score": function (d) {
+                                return d.stats.cluster_score;
                             }
                         },
                         hovercard_links: {

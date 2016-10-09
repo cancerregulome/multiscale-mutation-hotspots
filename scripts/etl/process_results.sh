@@ -13,6 +13,10 @@ cat $DATA_SRC/sup_tbl_1_cluster_definitions_with_domains.tsv | tail -n+2 > $DATA
 echo "Cluster/tumor type assignments..."
 cat $DATA_SRC/sup_tbl_2_clusters_tumor_type_assignment.tsv | tail -n+2 > $DATA_TRG/clusters_tumor_type_assignment.tsv
 
+# Remove header from cluster score file
+echo "Cluster scores..."
+cat $DATA_SRC/additional_sup_tbl_2_cluster_definitions_with_scores.tsv | tail -n+2 | cut -f 1-3 > $DATA_TRG/cluster_scores.tsv
+
 # Remove header from pathway associations file
 echo "Pathway associations..."
 cat $DATA_SRC/sup_tbl_5_pathway_gexp_associations.tsv | tail -n+2 | cut -f 1-9 > $DATA_TRG/pathway_associations.tsv
